@@ -180,7 +180,7 @@ ErrCode SerialComm::write(QByteArray data)
         _port->write(&buf,1);
         QThread::msleep(1);
     }
-    qDebug()<<"Writen="<<writen;
+    //qDebug()<<"Writen="<<writen;
     int retry=0;
 //    _port->flush();
 //    while (!_port->waitForBytesWritten(10));
