@@ -173,7 +173,13 @@ ErrCode SerialComm::write(QByteArray data)
 //    portMutex.lock();
     addCrc(data);
     qDebug()<<"write to port "<<toString(data);
-    int writen = _port->write(data);
+    //int writen = _port->write(data);
+    for(int i = 0;i<data.length();++i)
+    {
+        char buf = data[i];
+        _port->write(&buf,1);
+        QThread::msleep(1);
+    }
     qDebug()<<"Writen="<<writen;
     int retry=0;
 //    _port->flush();
