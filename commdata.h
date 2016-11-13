@@ -10,9 +10,9 @@ class CommData
 {
 public:
     CommData();
-    uint16_t newValue;
     uint16_t curValue;
-    uint16_t oldValue;
+    uint16_t changedValue;
+    uint16_t updatedValue;
     bool changed;
     bool updated;
     bool isChanged();
@@ -21,8 +21,10 @@ public:
     uint16_t value();
     void setValue(uint16_t val);
     void updateValue(uint16_t val);
-    void commit();
-    void submit();
+    void revertChanged();
+    void revertUpdated();
+    void commitChanged();
+    void commitUpdated();
     uint8_t readCode;
     uint8_t writeCode;
     QByteArray readReq();

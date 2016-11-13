@@ -107,7 +107,22 @@ void SerialComm::run()
                 {
                     qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" write changed";
                     write(dev->prefix()+param->writeReq());
-                    param->commit();
+                    if(param->checkAfterWrite)
+                    {
+                        param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq(),dev->dataLen)));
+                        if(param->isUpdated())
+                        {
+                            qDebug()<<"Test read failed, actual value="<<param->value();
+                            param->revertUpdated();
+                        }
+                        else
+                        {
+                            qDebug()<<"Test read OK, actual value="<<param->value();
+                            param->commitChanged();
+                        }
+                    }
+                    else
+                        param->commitChanged();
                 }
                 else if(param->value()!=param->defaultValue && param->autoWrite)
                 {

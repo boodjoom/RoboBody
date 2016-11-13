@@ -16,19 +16,33 @@ uint16_t CommData::value()
 {return curValue;}
 
 void CommData::setValue(uint16_t val)
-{if(val != curValue)
+{if(val != curValue)    {changedValue=curValue;curValue=val;changed=true;}}
+
+void CommData::updateValue(uint16_t val)
+{if(val != curValue){updatedValue=curValue;curValue=val;updated=true;}}
+
+void CommData::revertChanged()
+{
+    if(changed)
     {
-        oldValue=curValue;curValue=val;changed=true;
+        curValue = changedValue;
+        changed = false;
     }
 }
 
-void CommData::updateValue(uint16_t val)
-{if(val != curValue){oldValue=curValue;curValue=val;updated=true;}}
+void CommData::revertUpdated()
+{
+    if(updated)
+    {
+        curValue = updatedValue;
+        updated = false;
+    }
+}
 
-void CommData::commit()
+void CommData::commitChanged()
 {if(changed){changed=false;}}
 
-void CommData::submit()
+void CommData::commitUpdated()
 {if(updated){updated=false;}}
 
 QByteArray CommData::readReq()
