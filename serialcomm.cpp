@@ -177,13 +177,18 @@ ErrCode SerialComm::write(QByteArray data)
 //    while (!_port->waitForBytesWritten(10));
     while(retry<10)
     {
-        if(_port->waitForBytesWritten(20))
+        if(_port->waitForBytesWritten(10))
             break;
         else
             ++retry;
     }
     qDebug()<<"Writing dobne retry="<<retry;
 //    portMutex.unlock();
+    if(retry == 0)//скорее всего ничего не успели сделать
+    {
+        qDebug()<<"additional timeout";
+        QThread::msleep(20);
+    }
     if(retry<10)
         return ErrOk;
     else
