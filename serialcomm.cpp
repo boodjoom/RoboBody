@@ -332,11 +332,11 @@ void SerialComm::nextDev()
     if(model->hasNext())
     {
         model->next().second->toFront();
-        QTimer::singleShot(100,this,SLOT(nextParam()));
+        QTimer::singleShot(30,this,SLOT(nextParam()));
     }
     else
     {
-        QTimer::singleShot(100,this,SLOT(run()));
+        QTimer::singleShot(30,this,SLOT(run()));
     }
 }
 
@@ -392,10 +392,10 @@ void SerialComm::nextParam()
             param->fromReq(dev->stripPrefix(answer));
             qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" value="<<param->value();
         }
-        QTimer::singleShot(100,this,SLOT(nextParam()));
+        QTimer::singleShot(30,this,SLOT(nextParam()));
     }
     else
     {
-        QTimer::singleShot(100,this,SLOT(nextDev()));
+        QTimer::singleShot(30,this,SLOT(nextDev()));
     }
 }
