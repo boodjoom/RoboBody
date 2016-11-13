@@ -198,7 +198,7 @@ ErrCode SerialComm::write(QByteArray data)
         qDebug()<<"additional timeout";
         //QThread::msleep(30);
     }
-    QCoreApplication::processEvents();
+    //QCoreApplication::processEvents();
     if(retry<10)
         return ErrOk;
     else
@@ -332,11 +332,11 @@ void SerialComm::nextDev()
     if(model->hasNext())
     {
         model->next().second->toFront();
-        QTimer::singleShot(50,this,SLOT(nextParam()));
+        QTimer::singleShot(100,this,SLOT(nextParam()));
     }
     else
     {
-        QTimer::singleShot(50,this,SLOT(run()));
+        QTimer::singleShot(100,this,SLOT(run()));
     }
 }
 
@@ -392,10 +392,10 @@ void SerialComm::nextParam()
             param->fromReq(dev->stripPrefix(answer));
             qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" value="<<param->value();
         }
-        QTimer::singleShot(50,this,SLOT(nextParam()));
+        QTimer::singleShot(100,this,SLOT(nextParam()));
     }
     else
     {
-        QTimer::singleShot(50,this,SLOT(nextDev()));
+        QTimer::singleShot(100,this,SLOT(nextDev()));
     }
 }
