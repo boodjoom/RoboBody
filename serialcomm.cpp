@@ -293,6 +293,11 @@ bool SerialComm::openImpl()
         }
         else
         {
+            _port->setBaudRate(boudRate);
+            _port->setParity(QSerialPort::NoParity);
+            _port->setStopBits(QSerialPort::OneStop);
+            _port->setFlowControl(QSerialPort::NoFlowControl);
+            _port->setDataBits(QSerialPort::Data8);
             emit opened();
             qDebug()<<"port "<<portName<<" opened";
             return true;
