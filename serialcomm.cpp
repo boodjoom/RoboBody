@@ -208,6 +208,10 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
     {
         _port->readAll();
         errCode = write(req);
+        if(errCode != ErrOk)
+        {
+             qDebug()<<"write req to port fail";
+        }
     }
     QByteArray answer;
     uint8_t totalBytesToRead = dataBytesToRead+2;
@@ -231,7 +235,10 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
         if(retry<10)
             errCode=ErrOk;
         else
+        {
             errCode=ErrFail;
+            qDebug()<<"read from port fail";
+        }
     }
     if(errCode == ErrOk)
     {
