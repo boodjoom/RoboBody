@@ -196,7 +196,10 @@ ErrCode SerialComm::write(QByteArray data)
     if(retry<10)
         return ErrOk;
     else
+    {
+        _port->flush();
         return ErrFail;
+    }
 }
 
 void SerialComm::addCrc(QByteArray &data)
