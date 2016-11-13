@@ -6,6 +6,7 @@ extern "C"{
 }
 #include <QDebug>
 #include <QMutex>
+#include <QCoreApplication>
 
 QString toString(const QByteArray& data)
 {
@@ -187,6 +188,7 @@ ErrCode SerialComm::write(QByteArray data)
     if(retry == 0)//скорее всего ничего не успели сделать
     {
         qDebug()<<"additional timeout";
+        QCoreApplication::processEvents();
         QThread::msleep(30);
     }
     if(retry<10)
