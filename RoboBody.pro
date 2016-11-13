@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       -= gui
+QT       += serialport
 
 TARGET = RoboBody
 TEMPLATE = lib
@@ -18,7 +19,9 @@ SOURCES += rover.cpp \
     roverimpl.cpp \
     servo.cpp \
     serialcomm.cpp \
-    commdata.cpp
+    commdata.cpp \
+    pwmdrive.cpp \
+    crc16.c
 
 HEADERS += rover.h\
         robobody_global.h \
@@ -29,7 +32,11 @@ HEADERS += rover.h\
     servo.h \
     serialcomm.h \
     commdata.h \
-    errcode.h
+    errcode.h \
+    pwmdrive.h \
+    RS485.h \
+    warcode.h \
+    crc16.h
 
 unix {
     target.path = /usr/lib

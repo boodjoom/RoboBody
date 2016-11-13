@@ -3,11 +3,20 @@
 
 #include "abstractdevice.h"
 #include <QHash>
+#include "pwmdrive.h"
 
 class RoverModel
 {
 public:
-    RoverModel():deviceIter(devices){}
+    enum RoverDevices
+    {
+       LeftFrontWheelDrive=1,
+        LeftFrontWheelRotate=2
+    };
+    RoverModel():deviceIter(devices)
+    {
+        devices[(int)LeftFrontWheelDrive] = new PwmDrive(0x0a);
+    }
     QHash<int, AbstractDevice*> devices;
     QHashIterator<int, AbstractDevice*> deviceIter;
     bool hasNext(){return deviceIter.hasNext();}
