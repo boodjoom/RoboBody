@@ -11,12 +11,29 @@ TEMPLATE = lib
 
 DEFINES += ROBOBODY_LIBRARY
 
-SOURCES += rover.cpp
+SOURCES += rover.cpp \
+    rovermodel.cpp \
+    abstractdevice.cpp \
+    drive.cpp \
+    roverimpl.cpp \
+    servo.cpp \
+    serialcomm.cpp \
+    commdata.cpp
 
 HEADERS += rover.h\
-        robobody_global.h
+        robobody_global.h \
+    rovermodel.h \
+    abstractdevice.h \
+    drive.h \
+    roverimpl.h \
+    servo.h \
+    serialcomm.h \
+    commdata.h \
+    errcode.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+CONFIG += c++11
