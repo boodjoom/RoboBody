@@ -116,6 +116,7 @@ void SerialComm::run()
                     {
                         if(param->checkAfterWrite)
                         {
+                            qDebug()<<"Test read after write";
                             param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq(),dev->dataLen)));
                             if(param->isUpdated())
                             {
