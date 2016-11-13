@@ -169,18 +169,20 @@ ErrCode SerialComm::write(QByteArray data)
         return ErrWrongState;
 //    portMutex.lock();
     addCrc(data);
-    //qDebug()<<"write to port "<<toString(data);
-    _port->write(data.data(),6);
+    qDebug()<<"write to port "<<toString(data);
+    int writen = _port->write(data);
+    qDebug()<<"Writen="<<writen;
     int retry=0;
 //    _port->flush();
 //    while (!_port->waitForBytesWritten(10));
     while(retry<10)
     {
-        if(_port->waitForBytesWritten(10))
+        if(_port->waitForBytesWritten(20))
             break;
         else
             ++retry;
     }
+    qDebug()<<"Writing dobne retry="<<retry;
 //    portMutex.unlock();
     if(retry<10)
         return ErrOk;
