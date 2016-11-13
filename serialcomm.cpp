@@ -106,24 +106,32 @@ void SerialComm::run()
                 if(param->isChanged())
                 {
                     qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" write changed";
-                    write(dev->prefix()+param->writeReq());
-                    if(param->checkAfterWrite)
+                    ErrCode err = write(dev->prefix()+param->writeReq());
+                    if(err==ErrOk)
                     {
-                        param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq(),dev->dataLen)));
-                        if(param->isUpdated())
+                        if(param->checkAfterWrite)
                         {
-                            qDebug()<<"Test read failed, actual value="<<param->value();
-                            emit error(ErrSetParamFail);
-                            param->revertUpdated();
+                            param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq(),dev->dataLen)));
+                            if(param->isUpdated())
+                            {
+                                qDebug()<<"Test read failed, actual value="<<param->value();
+                                emit error(ErrSetParamFail);
+                                param->revertUpdated();
+                            }
+                            else
+                            {
+                                qDebug()<<"Test read OK, actual value="<<param->value();
+                                param->commitChanged();
+                            }
                         }
                         else
-                        {
-                            qDebug()<<"Test read OK, actual value="<<param->value();
                             param->commitChanged();
-                        }
                     }
                     else
-                        param->commitChanged();
+                    {
+                        qDebug()<<"wrate failed";
+                        emit error(ErrWriteFail);
+                    }
                 }
                 else if(param->value()!=param->defaultValue && param->autoWrite)
                 {
@@ -159,14 +167,14 @@ ErrCode SerialComm::write(QByteArray data)
     _port->write(data.data(),6);
     int retry=0;
     _port->flush();
-    while (!_port->waitForBytesWritten(10));
-//    while(retry<10)
-//    {
-//        if(_port->waitForBytesWritten(10))
-//            break;
-//        else
-//            ++retry;
-//    }
+//    while (!_port->waitForBytesWritten(10));
+    while(retry<10)
+    {
+        if(_port->waitForBytesWritten(10))
+            break;
+        else
+            ++retry;
+    }
 //    portMutex.unlock();
     if(retry<10)
         return ErrOk;
