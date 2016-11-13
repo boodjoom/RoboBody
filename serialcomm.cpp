@@ -87,8 +87,13 @@ void SerialComm::run()
         else if(!_port->isOpen())
         {
             if(!openImpl())
+            {
                 _opened=false;
+                return;
+            }
         }
+        if(!_port->isOpen())
+            return;
         //qDebug()<<"serialcomm run start sync total devices "<<model->devices.size();
         model->toFront();
         //if(!model->hasNext())qDebug()<<"model is empty";
@@ -129,7 +134,7 @@ void SerialComm::run()
                     }
                     else
                     {
-                        qDebug()<<"wrate failed";
+                        qDebug()<<"write failed";
                         emit error(ErrWriteFail);
                     }
                 }
