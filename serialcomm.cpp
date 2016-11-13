@@ -175,7 +175,7 @@ ErrCode SerialComm::write(QByteArray data)
 //    while (!_port->waitForBytesWritten(10));
     while(retry<10)
     {
-        if(_port->waitForBytesWritten(10))
+        if(_port->waitForBytesWritten(30))
             break;
         else
             ++retry;
