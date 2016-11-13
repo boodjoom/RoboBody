@@ -21,6 +21,7 @@ public:
     void setPortName(const QString& name);
     void setBoudRate(int rate);
     void setPort(QSerialPort* port){_port=port;}
+    bool isOpened();
 signals:
 //    void finished();
     void opened();
