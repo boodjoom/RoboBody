@@ -4,34 +4,51 @@
 extern "C"{
 #include "crc16.h"
 }
+#include <QDebug>
+#include <QMutex>
 
-SerialComm::SerialComm(QObject *parent) : QObject(parent)
+QString toString(const QByteArray& data)
+{
+    QString str;
+    for(int i=0;i<data.size();++i)
+        str+=QString("%1 ").arg((uint8_t)data[i],2,16);
+    return str;
+}
+
+SerialComm::SerialComm(QObject *parent)
+    : QObject(parent)
+    , _opened(false)
+{
+    _port = new QSerialPort(this);
+}
+
+SerialComm::~SerialComm()
 {
 
+}
+
+void SerialComm::setPortName(const QString &name){
+    portName=name;
+    _port->setPortName(portName);
+
+}
+
+void SerialComm::setBoudRate(int rate){boudRate=rate;_port->setBaudRate(boudRate);}
+
+bool SerialComm::isOpened()
+{
+    return _opened;
 }
 
 void SerialComm::open()
 {
-    if(_port != nullptr && _port->isOpen())
-    {
-        emit warning(WarAllreadyOpened);
-        return;
-    }
-    _port = new QSerialPort(portName,this);
-    _port->setBaudRate(boudRate);
-    if(!_port->open(QIODevice::ReadWrite))
-    {
-        delete _port;
-        _port = nullptr;
-        emit error(ErrOpenFail);
-    }
-    else
-        emit opened();
+    qDebug()<<"serialcomm open TH "<<QThread::currentThreadId();
+    _opened=true;
 }
 
 void SerialComm::close()
 {
-    if(_port != nullptr && _port->isOpen())
+    if(true && _port->isOpen())
     {
         _port->close();
         emit closed();
@@ -47,64 +64,95 @@ void SerialComm::stop()
 
 void SerialComm::start()
 {
+    qDebug()<<"start serialcomm TH "<<QThread::currentThreadId();
+//    _port = new QSerialPort(portName);
+//    _port->setBaudRate(boudRate);
     stopFlag=false;
-    run();
+    QTimer::singleShot(10,this,SLOT(run()));
 }
 
 void SerialComm::run()
 {
-    while(!stopFlag)
-    {
-        if(_port == nullptr || !_port->isOpen())
+    qDebug()<<"serialcomm run TH "<<QThread::currentThreadId();
+//    while(!stopFlag)
+//    {
+
+        if(!_opened)
         {
-            QThread::msleep(100);
-            continue;
+            qDebug()<<"serialcomm run port not ready";
+            //QThread::msleep(100);
+            QTimer::singleShot(100,this,SLOT(run()));
+            return;
         }
+        else if(!_port->isOpen())
+        {
+            if(!openImpl())
+                _opened=false;
+        }
+        qDebug()<<"serialcomm run start sync total devices "<<model->devices.size();
         model->toFront();
+        if(!model->hasNext())
+            qDebug()<<"model is empty";
         while(model->hasNext())//для всех устройств
         {
             QPair<int, AbstractDevice*> devItem = model->next();
+            qDebug()<<"dev "<<devItem.first;
             AbstractDevice* dev = devItem.second;
             dev->toFront();
             while(dev->hasNext())//для всех параметров
             {
                 QPair<int, CommData*> paramItem = dev->next();
+                qDebug()<<"param "<<paramItem.first;
                 CommData* param = paramItem.second;
                 if(param->isChanged())
                 {
+                    qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" write changed";
                     write(dev->prefix()+param->writeReq());
                     param->commit();
                 }
                 else if(param->value()!=param->defaultValue && param->autoWrite)
                 {
+                    qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto write";
                     write(dev->prefix()+param->writeReq());
                 }
                 else if(param->autoUpdate)
                 {
-                    QByteArray answer = read(dev->prefix()+param->writeReq(),dev->dataLen);
+                    qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto update "<<toString(param->readReq());
+                    QByteArray answer = read(dev->prefix()+param->readReq(),dev->dataLen);
                     param->fromReq(dev->stripPrefix(answer));
+                    qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" value="<<param->value();
                 }
             }
         }
-        QThread::msleep(50);
-    }
-    emit finished();
+        //QThread::msleep(50);
+    if(stopFlag)
+        emit finished();
+    else
+        QTimer::singleShot(200,this,SLOT(run()));
+//    }
+//    emit finished();
 }
 
 ErrCode SerialComm::write(QByteArray data)
 {
-    if(_port == nullptr || !_port->isOpen())
+    qDebug()<<"start write";
+    if(false || !_port->isOpen())
         return ErrWrongState;
+//    portMutex.lock();
     addCrc(data);
-    _port->write(data);
+    qDebug()<<"write to port "<<toString(data);
+    _port->write(data.data(),6);
     int retry=0;
-    while(retry<10)
-    {
-        if(_port->waitForBytesWritten(10))
-            break;
-        else
-            ++retry;
-    }
+    _port->flush();
+    while (!_port->waitForBytesWritten(10));
+//    while(retry<10)
+//    {
+//        if(_port->waitForBytesWritten(10))
+//            break;
+//        else
+//            ++retry;
+//    }
+//    portMutex.unlock();
     if(retry<10)
         return ErrOk;
     else
@@ -113,6 +161,7 @@ ErrCode SerialComm::write(QByteArray data)
 
 void SerialComm::addCrc(QByteArray &data)
 {
+    qDebug()<<"addCrc to data";
     uint8_t dataLen = data.length();
     uint16_t crc1 = crcCompute(reinterpret_cast<uint8_t*>(data.data()),dataLen);
     data.append((char)(crc1>>8));
@@ -121,8 +170,9 @@ void SerialComm::addCrc(QByteArray &data)
 
 QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *err)
 {
+    qDebug()<<"start read";
     ErrCode errCode = ErrOk;
-    if(_port == nullptr || !_port->isOpen())
+    if(false || !_port->isOpen())
     {
         errCode = ErrWrongState;
     }
@@ -139,14 +189,17 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
         retry=0;
         while(retry<10)
         {
-            _port->waitForReadyRead(10);
+            if(_port->waitForReadyRead(30))
+            {
             answer += _port->readAll();
             removeLeadingZeros(answer);
             if(answer.length()>=totalBytesToRead)
                 break;
             else
                 ++retry;
+            }
         }
+        qDebug()<<"read from port "<<toString(answer)<<"retry="<<retry;
         if(retry<10)
             errCode=ErrOk;
         else
@@ -158,11 +211,13 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
             answer = answer.left(totalBytesToRead);
         if(!checkCrc(answer))
         {
+            qDebug()<<"crc error";
             errCode = ErrWrongCrc;
             answer.clear();
         }
         else
         {
+            qDebug()<<"strip crc data:"<<toString(answer);
             answer = answer.left(dataBytesToRead);
         }
     }
@@ -173,9 +228,11 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
 
 bool SerialComm::checkCrc(QByteArray &data)
 {
+    qDebug()<<"check crc data:"<<toString(data);
     uint8_t dataLen = data.length()-2;
     uint16_t crc1 = crcCompute(reinterpret_cast<uint8_t*>(data.data()),dataLen);
-    uint16_t crc2 = (static_cast<uint16_t>(data[dataLen])<<8) | (static_cast<uint16_t>(data[dataLen+1]));
+    uint16_t crc2 = (static_cast<uint8_t>(data[dataLen])<<8) | (static_cast<uint8_t>(data[dataLen+1]));
+    qDebug()<<"crc1="<<crc1<<" crc2="<<crc2;
     return (crc1 == crc2);
 }
 
@@ -186,4 +243,30 @@ void SerialComm::removeLeadingZeros(QByteArray &data)
         if(data[i]!='\0')break;
     if(i>0)
         data=data.right(data.length()-i);
+}
+
+bool SerialComm::openImpl()
+{
+        if(false)
+        {
+            emit error(ErrWrongState);
+            qDebug()<<"serialcomm open not inited";
+        } else
+        if(_port->isOpen())
+        {
+            emit warning(WarAllreadyOpened);
+        } else
+        if(!_port->open(QIODevice::ReadWrite))
+        {
+            emit error(ErrOpenFail);
+            qDebug()<<"port "<<portName<<" open error";
+        }
+        else
+        {
+            emit opened();
+            qDebug()<<"port "<<portName<<" opened";
+            return true;
+        }
+        return false;
+    //    portMutex.unlock();
 }

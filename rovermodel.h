@@ -13,15 +13,12 @@ public:
        LeftFrontWheelDrive=1,
         LeftFrontWheelRotate=2
     };
-    RoverModel():deviceIter(devices)
-    {
-        devices[(int)LeftFrontWheelDrive] = new PwmDrive(0x0a);
-    }
+    RoverModel();
     QHash<int, AbstractDevice*> devices;
     QHashIterator<int, AbstractDevice*> deviceIter;
-    bool hasNext(){return deviceIter.hasNext();}
-    void toFront(){deviceIter.toFront();}
-    QPair<int, AbstractDevice*> next(){deviceIter.next();return QPair<int,AbstractDevice*>(deviceIter.key(),deviceIter.value());}
+    bool hasNext();
+    void toFront();
+    QPair<int, AbstractDevice*> next();
 };
 
 #endif // ROVERMODEL_H

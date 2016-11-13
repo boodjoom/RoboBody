@@ -7,12 +7,11 @@
 class AbstractDevice
 {
 public:
-    AbstractDevice():paramIter(params){}
+    AbstractDevice();
     QHash<int, CommData*> params;
-    bool hasNext()
-    {return paramIter.hasNext();}
-    QPair<int, CommData*> next(){paramIter.next();return QPair<int,CommData*>(paramIter.key(),paramIter.value());}
-    void toFront(){paramIter.toFront();}
+    bool hasNext();
+    QPair<int, CommData*> next();
+    void toFront();
     QHashIterator<int, CommData*> paramIter;
     virtual QByteArray prefix()=0;
     virtual QByteArray stripPrefix(const QByteArray& data)=0;

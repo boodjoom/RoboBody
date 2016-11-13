@@ -8,7 +8,8 @@ enum ErrCode
     ErrOpenFail =2,
     ErrWrongCrc =3,
     ErrWrongCode =4,
-    ErrWrongState =5
+    ErrWrongState =5,
+    ErrWrongData =6
 };
 
 #endif // ERRCODE_H
