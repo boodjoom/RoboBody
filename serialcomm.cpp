@@ -164,7 +164,7 @@ void SerialComm::run()
 
 ErrCode SerialComm::write(QByteArray data)
 {
-    //qDebug()<<"start write";
+    qDebug()<<"start write";
     if(false || !_port->isOpen())
         return ErrWrongState;
 //    portMutex.lock();
@@ -207,7 +207,7 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
     }
     if(errCode == ErrOk)
     {
-        _port->readAll();
+        //_port->readAll();
         errCode = write(req);
         if(errCode != ErrOk)
         {
