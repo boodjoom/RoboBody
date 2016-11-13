@@ -113,6 +113,7 @@ void SerialComm::run()
                         if(param->isUpdated())
                         {
                             qDebug()<<"Test read failed, actual value="<<param->value();
+                            emit error(ErrSetParamFail);
                             param->revertUpdated();
                         }
                         else

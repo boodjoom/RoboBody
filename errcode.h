@@ -9,7 +9,8 @@ enum ErrCode
     ErrWrongCrc =3,
     ErrWrongCode =4,
     ErrWrongState =5,
-    ErrWrongData =6
+    ErrWrongData =6,
+    ErrSetParamFail =7
 };
 
 #endif // ERRCODE_H

@@ -33,7 +33,8 @@ ErrCode RoverImpl::init(QSettings &settings)
     connect(_commThread, SIGNAL(started()),_serialComm, SLOT(start()),Qt::QueuedConnection);
     connect(_serialComm, SIGNAL(finished()), _serialComm, SLOT(deleteLater()),Qt::QueuedConnection);
     connect(_commThread, SIGNAL(finished()), _commThread, SLOT(deleteLater()),Qt::QueuedConnection);
-
+    connect(_serialComm, SIGNAL(error(ErrCode)),this,SIGNAL(error()));
+    connect(_serialComm, SIGNAL(warning(WarCode)),this,SIGNAL(warning(WarCode)));
     settings.endGroup();
     //qDebug()<<"start thread TH "<<QThread::currentThreadId();
     //_serialComm->start();

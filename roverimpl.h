@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSettings>
 #include "errcode.h"
+#include "warcode.h"
 
 class RoverModel;
 class SerialComm;
@@ -25,6 +26,8 @@ signals:
     void stop();
     void opened();
     void closed();
+    void error(ErrCode);
+    void warning(WarCode);
 private:
     double _speed;
     SerialComm* _serialComm;

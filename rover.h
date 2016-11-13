@@ -5,6 +5,7 @@
 #include <QSettings>
 #include "robobody_global.h"
 #include "errcode.h"
+#include "warcode.h"
 class RoverImpl;
 
 class ROBOBODYSHARED_EXPORT Rover: public QObject
@@ -22,6 +23,8 @@ public slots:
 signals:
     void connected();
     void disconnected();
+    void error(ErrCode);
+    void warning(WarCode);
 private:
     RoverImpl* pImpl;
 };
