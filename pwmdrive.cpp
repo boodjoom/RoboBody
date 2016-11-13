@@ -3,12 +3,13 @@
 PwmDrive::PwmDrive(uint8_t driveAddr):Drive(driveAddr)
 {
     CommData* data = new CommData();
-    data->autoUpdate=true;
+    data->autoUpdate=false;
     data->autoWrite=true;
     data->defaultValue=4095;
     data->readCode = READ_REFSPEED_FCN;
     data->writeCode = WRITE_REFSPEED_FCN;
-    data->setValue(600);
+    data->checkAfterWrite = true;
+    data->setValue(data->defaultValue);
     params[(int)RefSpeed] = data;
     data = new CommData();
     data->autoUpdate=true;

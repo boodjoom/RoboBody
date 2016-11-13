@@ -7,8 +7,8 @@ class PwmDrive : public Drive
 {
     enum PwmDriveParams
     {
-        RefSpeed=1,
-        CurSpeed=2
+        RefSpeed=AbstractDevice::RefValue,
+        CurSpeed=AbstractDevice::CurValue
     };
 public:
     PwmDrive(uint8_t driveAddr);

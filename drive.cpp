@@ -8,7 +8,7 @@ Drive::Drive(uint8_t driveAddr):AbstractDevice(),addr(driveAddr)
 
 QByteArray Drive::prefix()
 {
-    qDebug()<<"drive prefix";
+    //qDebug()<<"drive prefix";
     char buf[] = {(char)addr};
     return QByteArray(buf,1);
 }
@@ -23,7 +23,7 @@ QString toString2(const QByteArray& data)
 
 QByteArray Drive::stripPrefix(const QByteArray &data)
 {
-    qDebug()<<"drive stripPrefix data:"<<toString2(data);
+    //qDebug()<<"drive stripPrefix data:"<<toString2(data);
     if(data.isEmpty())
         return data;
     else

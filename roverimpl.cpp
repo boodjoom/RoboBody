@@ -35,7 +35,7 @@ ErrCode RoverImpl::init(QSettings &settings)
     connect(_commThread, SIGNAL(finished()), _commThread, SLOT(deleteLater()),Qt::QueuedConnection);
 
     settings.endGroup();
-    qDebug()<<"start thread TH "<<QThread::currentThreadId();
+    //qDebug()<<"start thread TH "<<QThread::currentThreadId();
     //_serialComm->start();
     _commThread->start();
     return ErrOk;
@@ -45,8 +45,16 @@ void RoverImpl::setSpeed(double speed, QDateTime timeout)
 {
     if(!qFuzzyCompare(speed+1.0,_speed+1.0))
     {
+        qDebug()<<"setSpeed "<<speed;
         _speed=speed;
-        //set model values
+        uint16_t nativeSpeed;
+        if(_speed>0.1)
+            nativeSpeed = 4095 + 3000;
+        else if(_speed<-0.1)
+            nativeSpeed = 4095 - 3000;
+        else
+            nativeSpeed = 4095;
+        _roverModel->devices[RoverModel::LeftFrontWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
     }
 }
 

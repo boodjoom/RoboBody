@@ -16,7 +16,11 @@ uint16_t CommData::value()
 {return curValue;}
 
 void CommData::setValue(uint16_t val)
-{if(val != curValue){oldValue=curValue;curValue=val;changed=true;}}
+{if(val != curValue)
+    {
+        oldValue=curValue;curValue=val;changed=true;
+    }
+}
 
 void CommData::updateValue(uint16_t val)
 {if(val != curValue){oldValue=curValue;curValue=val;updated=true;}}
@@ -35,7 +39,7 @@ QByteArray CommData::readReq()
 
 QByteArray CommData::writeReq()
 {
-    qDebug()<<"writeReq code="<<writeCode<<" val="<<value();
+    //qDebug()<<"writeReq code="<<writeCode<<" val="<<value();
     char buf[] = {(char)writeCode,(char)(value()>>8),(char)value()};
     return QByteArray(buf,3);
 }
@@ -50,20 +54,20 @@ QString toString1(const QByteArray& data)
 
 ErrCode CommData::fromReq(const QByteArray &data, uint8_t shift)
 {
-    qDebug()<<"fromReq data:"<<toString1(data);
+    //qDebug()<<"fromReq data:"<<toString1(data);
     if(data.isEmpty() || data.size()<(shift+3))
     {
-        qDebug()<<"fromReq wrong data len="<<data.size();
+        //qDebug()<<"fromReq wrong data len="<<data.size();
         return ErrWrongData;
     }
     if(static_cast<uint8_t>(data[shift])!=readCode && static_cast<uint8_t>(data[shift])!=writeCode)
     {
-        qDebug()<<"fromReq wrong code";
+        //qDebug()<<"fromReq wrong code";
         return ErrWrongCode;
     }
-    qDebug()<<"hi="<<QString::number((uint8_t)data[shift+1],16)<<" lo="<<QString::number((uint8_t)data[shift+2],16);
+    //qDebug()<<"hi="<<QString::number((uint8_t)data[shift+1],16)<<" lo="<<QString::number((uint8_t)data[shift+2],16);
     uint16_t val = (static_cast<uint8_t>(data[shift+1])<<8) | (static_cast<uint8_t>(data[shift+2]));
-    qDebug()<<"val="<<QString::number(val,16);
+    //qDebug()<<"val="<<QString::number(val,16);
     updateValue(val);
     return ErrOk;
 }

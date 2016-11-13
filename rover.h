@@ -15,6 +15,7 @@ public:
     ~Rover();
     ErrCode init(QSettings& settings);
     ErrCode deInit();
+    ErrCode setSpeed(double speed);
 public slots:
     void connect();
     void disconnect();

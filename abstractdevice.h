@@ -7,6 +7,11 @@
 class AbstractDevice
 {
 public:
+    enum DeviceParams
+    {
+        RefValue =1,
+        CurValue =2
+    };
     AbstractDevice();
     QHash<int, CommData*> params;
     bool hasNext();

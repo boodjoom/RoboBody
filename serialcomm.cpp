@@ -73,13 +73,13 @@ void SerialComm::start()
 
 void SerialComm::run()
 {
-    qDebug()<<"serialcomm run TH "<<QThread::currentThreadId();
+    //qDebug()<<"serialcomm run TH "<<QThread::currentThreadId();
 //    while(!stopFlag)
 //    {
 
         if(!_opened)
         {
-            qDebug()<<"serialcomm run port not ready";
+            //qDebug()<<"serialcomm run port not ready";
             //QThread::msleep(100);
             QTimer::singleShot(100,this,SLOT(run()));
             return;
@@ -89,20 +89,19 @@ void SerialComm::run()
             if(!openImpl())
                 _opened=false;
         }
-        qDebug()<<"serialcomm run start sync total devices "<<model->devices.size();
+        //qDebug()<<"serialcomm run start sync total devices "<<model->devices.size();
         model->toFront();
-        if(!model->hasNext())
-            qDebug()<<"model is empty";
+        //if(!model->hasNext())qDebug()<<"model is empty";
         while(model->hasNext())//для всех устройств
         {
             QPair<int, AbstractDevice*> devItem = model->next();
-            qDebug()<<"dev "<<devItem.first;
+            //qDebug()<<"dev "<<devItem.first;
             AbstractDevice* dev = devItem.second;
             dev->toFront();
             while(dev->hasNext())//для всех параметров
             {
                 QPair<int, CommData*> paramItem = dev->next();
-                qDebug()<<"param "<<paramItem.first;
+                //qDebug()<<"param "<<paramItem.first;
                 CommData* param = paramItem.second;
                 if(param->isChanged())
                 {
@@ -117,7 +116,7 @@ void SerialComm::run()
                 }
                 else if(param->autoUpdate)
                 {
-                    qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto update "<<toString(param->readReq());
+                    //qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto update "<<toString(param->readReq());
                     QByteArray answer = read(dev->prefix()+param->readReq(),dev->dataLen);
                     param->fromReq(dev->stripPrefix(answer));
                     qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" value="<<param->value();
@@ -135,12 +134,12 @@ void SerialComm::run()
 
 ErrCode SerialComm::write(QByteArray data)
 {
-    qDebug()<<"start write";
+    //qDebug()<<"start write";
     if(false || !_port->isOpen())
         return ErrWrongState;
 //    portMutex.lock();
     addCrc(data);
-    qDebug()<<"write to port "<<toString(data);
+    //qDebug()<<"write to port "<<toString(data);
     _port->write(data.data(),6);
     int retry=0;
     _port->flush();
@@ -161,7 +160,7 @@ ErrCode SerialComm::write(QByteArray data)
 
 void SerialComm::addCrc(QByteArray &data)
 {
-    qDebug()<<"addCrc to data";
+    //qDebug()<<"addCrc to data";
     uint8_t dataLen = data.length();
     uint16_t crc1 = crcCompute(reinterpret_cast<uint8_t*>(data.data()),dataLen);
     data.append((char)(crc1>>8));
@@ -170,7 +169,7 @@ void SerialComm::addCrc(QByteArray &data)
 
 QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *err)
 {
-    qDebug()<<"start read";
+    //qDebug()<<"start read";
     ErrCode errCode = ErrOk;
     if(false || !_port->isOpen())
     {
@@ -199,7 +198,7 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
                 ++retry;
             }
         }
-        qDebug()<<"read from port "<<toString(answer)<<"retry="<<retry;
+        //qDebug()<<"read from port "<<toString(answer)<<"retry="<<retry;
         if(retry<10)
             errCode=ErrOk;
         else
@@ -211,13 +210,13 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
             answer = answer.left(totalBytesToRead);
         if(!checkCrc(answer))
         {
-            qDebug()<<"crc error";
+            //qDebug()<<"crc error";
             errCode = ErrWrongCrc;
             answer.clear();
         }
         else
         {
-            qDebug()<<"strip crc data:"<<toString(answer);
+            //qDebug()<<"strip crc data:"<<toString(answer);
             answer = answer.left(dataBytesToRead);
         }
     }
@@ -228,11 +227,11 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
 
 bool SerialComm::checkCrc(QByteArray &data)
 {
-    qDebug()<<"check crc data:"<<toString(data);
+    //qDebug()<<"check crc data:"<<toString(data);
     uint8_t dataLen = data.length()-2;
     uint16_t crc1 = crcCompute(reinterpret_cast<uint8_t*>(data.data()),dataLen);
     uint16_t crc2 = (static_cast<uint8_t>(data[dataLen])<<8) | (static_cast<uint8_t>(data[dataLen+1]));
-    qDebug()<<"crc1="<<crc1<<" crc2="<<crc2;
+    //qDebug()<<"crc1="<<crc1<<" crc2="<<crc2;
     return (crc1 == crc2);
 }
 
@@ -250,7 +249,7 @@ bool SerialComm::openImpl()
         if(false)
         {
             emit error(ErrWrongState);
-            qDebug()<<"serialcomm open not inited";
+            //qDebug()<<"serialcomm open not inited";
         } else
         if(_port->isOpen())
         {
@@ -259,12 +258,12 @@ bool SerialComm::openImpl()
         if(!_port->open(QIODevice::ReadWrite))
         {
             emit error(ErrOpenFail);
-            qDebug()<<"port "<<portName<<" open error";
+            //qDebug()<<"port "<<portName<<" open error";
         }
         else
         {
             emit opened();
-            qDebug()<<"port "<<portName<<" opened";
+            //qDebug()<<"port "<<portName<<" opened";
             return true;
         }
         return false;

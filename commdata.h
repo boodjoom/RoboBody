@@ -10,6 +10,7 @@ class CommData
 {
 public:
     CommData();
+    uint16_t newValue;
     uint16_t curValue;
     uint16_t oldValue;
     bool changed;
@@ -30,6 +31,7 @@ public:
     bool autoWrite;
     uint16_t defaultValue;
     bool autoUpdate;
+    bool checkAfterWrite;
 };
 
 #endif // COMMDATA_H

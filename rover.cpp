@@ -1,5 +1,6 @@
 #include "rover.h"
 #include "roverimpl.h"
+#include <QDateTime>
 
 Rover::Rover()
 {
@@ -22,6 +23,11 @@ ErrCode Rover::deInit()
 {
     pImpl->deInit();
     return ErrOk;
+}
+
+ErrCode Rover::setSpeed(double speed)
+{
+    pImpl->setSpeed(speed,QDateTime::currentDateTime());
 }
 
 void Rover::connect()
