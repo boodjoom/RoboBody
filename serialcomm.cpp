@@ -194,7 +194,7 @@ ErrCode SerialComm::write(QByteArray data)
 //    qDebug()<<"Writing dobne retry="<<retry;
 //    portMutex.unlock();
 //    if(retry == 0)//скорее всего ничего не успели сделать
-    {
+//    {
 //        qDebug()<<"additional timeout";
         //QThread::msleep(30);
 //    }
