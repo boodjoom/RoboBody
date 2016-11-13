@@ -27,9 +27,43 @@ ErrCode Rover::deInit()
     return ErrOk;
 }
 
-ErrCode Rover::setSpeed(double speed)
+ErrCode Rover::setRefSpeed(double speed)
 {
-    pImpl->setSpeed(speed,QDateTime::currentDateTime());
+    pImpl->setRefSpeed(speed,QDateTime::currentDateTime());
+    return ErrOk;
+}
+
+double Rover::getCurSpeed(ErrCode *err)
+{
+}
+
+double Rover::getRefSpeed(ErrCode *err)
+{
+}
+
+bool Rover::isBreaksEnabled(ErrCode *err)
+{
+
+}
+
+ErrCode Rover::setBreaksEnabled(bool enabled)
+{
+    return pImpl->setBreaks(enabled);
+}
+
+double Rover::getRefYaw(ErrCode *err)
+{
+
+}
+
+double Rover::getCurYaw(ErrCode *err)
+{
+
+}
+
+ErrCode Rover::setRefYaw(double yaw)
+{
+    pImpl->setRefYaw(yaw,QDateTime::currentDateTime());
 }
 
 void Rover::connect()

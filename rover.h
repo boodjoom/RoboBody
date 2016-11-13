@@ -16,7 +16,14 @@ public:
     ~Rover();
     ErrCode init(QSettings& settings);
     ErrCode deInit();
-    ErrCode setSpeed(double speed);
+    ErrCode setRefSpeed(double speed);
+    double getCurSpeed(ErrCode* err = nullptr);
+    double getRefSpeed(ErrCode* err = nullptr);
+    ErrCode setBreaksEnabled(bool enabled);
+    bool isBreaksEnabled(ErrCode* err = nullptr);
+    ErrCode setRefYaw(double yaw);
+    double getRefYaw(ErrCode* err = nullptr);
+    double getCurYaw(ErrCode* err = nullptr);
 public slots:
     void connect();
     void disconnect();

@@ -42,8 +42,9 @@ ErrCode RoverImpl::init(QSettings &settings)
     return ErrOk;
 }
 
-void RoverImpl::setSpeed(double speed, QDateTime timeout)
+void RoverImpl::setRefSpeed(double speed, QDateTime timeout)
 {
+    Q_UNUSED(timeout)
     if(!qFuzzyCompare(speed+1.0,_speed+1.0))
     {
         qDebug()<<"setSpeed "<<speed;
@@ -56,6 +57,20 @@ void RoverImpl::setSpeed(double speed, QDateTime timeout)
         else
             nativeSpeed = 4095;
         _roverModel->devices[RoverModel::LeftFrontWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+        _roverModel->devices[RoverModel::LeftMiddleWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+        _roverModel->devices[RoverModel::LeftBackWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+        _roverModel->devices[RoverModel::WrightFrontWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+        _roverModel->devices[RoverModel::WrightMiddleWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+        _roverModel->devices[RoverModel::WrightBackWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+    }
+}
+
+void RoverImpl::setRefYaw(double yaw, QDateTime timeout)
+{
+    Q_UNUSED(timeout)
+    if(!qFuzzyCompare(yaw+1.0,_yaw+1.0))
+    {
+        qDebug()<<"setYaw not implemented";
     }
 }
 
@@ -74,4 +89,9 @@ void RoverImpl::openPort()
 void RoverImpl::closePort()
 {
     emit close();
+}
+
+ErrCode RoverImpl::setBreaks(bool enabled)
+{
+    qDebug()<<"Not implemented";
 }

@@ -15,10 +15,12 @@ class RoverImpl: public QObject
 public:
     RoverImpl();
     ErrCode init(QSettings &settings);
-    void setSpeed(double speed, QDateTime timeout);
+    void setRefSpeed(double speed, QDateTime timeout);
+    void setRefYaw(double yaw, QDateTime timeout);
     void deInit();
     void openPort();
     void closePort();
+    ErrCode setBreaks(bool enabled);
 signals:
     void open();
     void close();
@@ -30,6 +32,7 @@ signals:
     void warning(WarCode);
 private:
     double _speed;
+    double _yaw;
     SerialComm* _serialComm;
     QThread* _commThread;
     RoverModel* _roverModel;

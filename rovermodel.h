@@ -11,7 +11,15 @@ public:
     enum RoverDevices
     {
        LeftFrontWheelDrive=1,
-        LeftFrontWheelRotate=2
+       LeftFrontWheelRotate=2,
+        LeftMiddleWheelDrive=3,
+        LeftBackWheelDrive=4,
+        WrightFrontWheelDrive=5,
+        WrightMiddleWheelDrive=6,
+        WrightBackWheelDrive=7,
+        LeftBackWheelRotate,
+        WrightFrontWheelRotate,
+        WrightBackWheelRotate
     };
     RoverModel();
     QHash<int, AbstractDevice*> devices;

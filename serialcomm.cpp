@@ -262,11 +262,6 @@ void SerialComm::removeLeadingZeros(QByteArray &data)
 
 bool SerialComm::openImpl()
 {
-        if(false)
-        {
-            emit error(ErrWrongState);
-            //qDebug()<<"serialcomm open not inited";
-        } else
         if(_port->isOpen())
         {
             emit warning(WarAllreadyOpened);
@@ -274,12 +269,12 @@ bool SerialComm::openImpl()
         if(!_port->open(QIODevice::ReadWrite))
         {
             emit error(ErrOpenFail);
-            //qDebug()<<"port "<<portName<<" open error";
+            qDebug()<<"port "<<portName<<" open error";
         }
         else
         {
             emit opened();
-            //qDebug()<<"port "<<portName<<" opened";
+            qDebug()<<"port "<<portName<<" opened";
             return true;
         }
         return false;
