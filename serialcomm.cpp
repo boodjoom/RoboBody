@@ -172,14 +172,14 @@ ErrCode SerialComm::write(QByteArray data)
         return ErrWrongState;
 //    portMutex.lock();
     addCrc(data);
-    qDebug()<<"write to port "<<toString(data);
-    //int writen = _port->write(data);
-    for(int i = 0;i<data.length();++i)
-    {
-        char buf = data[i];
-        _port->write(&buf,1);
-        QThread::msleep(1);
-    }
+//    qDebug()<<"write to port "<<toString(data);
+    /*int writen = */_port->write(data);
+//    for(int i = 0;i<data.length();++i)
+//    {
+//        char buf = data[i];
+//        _port->write(&buf,1);
+//        QThread::msleep(1);
+//    }
     //qDebug()<<"Writen="<<writen;
     int retry=0;
 //    _port->flush();
@@ -191,13 +191,13 @@ ErrCode SerialComm::write(QByteArray data)
         else
             ++retry;
     }
-    qDebug()<<"Writing dobne retry="<<retry;
+//    qDebug()<<"Writing dobne retry="<<retry;
 //    portMutex.unlock();
-    if(retry == 0)//скорее всего ничего не успели сделать
+//    if(retry == 0)//скорее всего ничего не успели сделать
     {
-        qDebug()<<"additional timeout";
+//        qDebug()<<"additional timeout";
         //QThread::msleep(30);
-    }
+//    }
     //QCoreApplication::processEvents();
     if(retry<10)
         return ErrOk;
