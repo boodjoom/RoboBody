@@ -1,0 +1,12 @@
+#ifndef ROBOBODY_GLOBAL_H
+#define ROBOBODY_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(ROBOBODY_LIBRARY)
+#  define ROBOBODYSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define ROBOBODYSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // ROBOBODY_GLOBAL_H
