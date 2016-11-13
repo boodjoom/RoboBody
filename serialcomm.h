@@ -49,6 +49,8 @@ protected:
     bool _opened;
     bool openImpl();
 //    QMutex portMutex;
+    Q_SLOT void nextDev();
+    Q_SLOT void nextParam();
 };
 
 #endif // SERIALCOMM_H

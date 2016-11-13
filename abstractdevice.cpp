@@ -7,4 +7,9 @@ bool AbstractDevice::hasNext()
 
 QPair<int, CommData *> AbstractDevice::next(){paramIter.next();return QPair<int,CommData*>(paramIter.key(),paramIter.value());}
 
+QPair<int, CommData *> AbstractDevice::current()
+{
+    return QPair<int,CommData*>(paramIter.key(),paramIter.value());
+}
+
 void AbstractDevice::toFront(){paramIter.toFront();}

@@ -16,3 +16,7 @@ bool RoverModel::hasNext(){return deviceIter.hasNext();}
 void RoverModel::toFront(){deviceIter.toFront();}
 
 QPair<int, AbstractDevice *> RoverModel::next(){deviceIter.next();return QPair<int,AbstractDevice*>(deviceIter.key(),deviceIter.value());}
+
+QPair<int, AbstractDevice *> RoverModel::current()
+{return QPair<int,AbstractDevice*>(deviceIter.key(),deviceIter.value());}
+

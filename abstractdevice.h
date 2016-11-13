@@ -16,6 +16,7 @@ public:
     QHash<int, CommData*> params;
     bool hasNext();
     QPair<int, CommData*> next();
+    QPair<int, CommData *> current();
     void toFront();
     QHashIterator<int, CommData*> paramIter;
     virtual QByteArray prefix()=0;

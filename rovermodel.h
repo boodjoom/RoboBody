@@ -27,6 +27,7 @@ public:
     bool hasNext();
     void toFront();
     QPair<int, AbstractDevice*> next();
+    QPair<int, AbstractDevice *> current();
 };
 
 #endif // ROVERMODEL_H

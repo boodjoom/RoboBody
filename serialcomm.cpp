@@ -97,6 +97,7 @@ void SerialComm::run()
             return;
         //qDebug()<<"serialcomm run start sync total devices "<<model->devices.size();
         model->toFront();
+#if 0
         //if(!model->hasNext())qDebug()<<"model is empty";
         while(model->hasNext())//для всех устройств
         {
@@ -154,11 +155,12 @@ void SerialComm::run()
                 }
             }
         }
+#endif
         //QThread::msleep(50);
     if(stopFlag)
         emit finished();
     else
-        QTimer::singleShot(200,this,SLOT(run()));
+        QTimer::singleShot(50,this,SLOT(nextDev()));
 //    }
 //    emit finished();
 }
@@ -313,5 +315,78 @@ bool SerialComm::openImpl()
             return true;
         }
         return false;
-    //    portMutex.unlock();
+        //    portMutex.unlock();
+}
+
+void SerialComm::nextDev()
+{
+    if(model->hasNext())
+    {
+        model->next().second->toFront();
+        QTimer::singleShot(5,this,SLOT(nextParam()));
+    }
+    else
+    {
+        QTimer::singleShot(5,this,SLOT(run()));
+    }
+}
+
+void SerialComm::nextParam()
+{
+    QPair<int, AbstractDevice*> devItem = model->current();
+    AbstractDevice* dev = devItem.second;
+    if(dev->hasNext())
+    {
+        QPair<int, CommData*> paramItem = dev->next();
+        //qDebug()<<"param "<<paramItem.first;
+        CommData* param = paramItem.second;
+        if(param->isChanged())
+        {
+            qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" write changed";
+            ErrCode err = write(dev->prefix()+param->writeReq());
+            if(err==ErrOk)
+            {
+                if(param->checkAfterWrite)
+                {
+                    qDebug()<<"Test read after write";
+                    param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq(),dev->dataLen)));
+                    if(param->isUpdated())
+                    {
+                        qDebug()<<"Test read failed, actual value="<<param->value();
+                        emit error(ErrSetParamFail);
+                        param->revertUpdated();
+                    }
+                    else
+                    {
+                        qDebug()<<"Test read OK, actual value="<<param->value();
+                        param->commitChanged();
+                    }
+                }
+                else
+                    param->commitChanged();
+            }
+            else
+            {
+                qDebug()<<"write failed";
+                emit error(ErrWriteFail);
+            }
+        }
+        else if(param->value()!=param->defaultValue && param->autoWrite)
+        {
+            qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto write";
+            write(dev->prefix()+param->writeReq());
+        }
+        else if(param->autoUpdate)
+        {
+            //qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto update "<<toString(param->readReq());
+            QByteArray answer = read(dev->prefix()+param->readReq(),dev->dataLen);
+            param->fromReq(dev->stripPrefix(answer));
+            qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" value="<<param->value();
+        }
+        QTimer::singleShot(5,this,SLOT(nextParam()));
+    }
+    else
+    {
+        QTimer::singleShot(5,this,SLOT(nextDev()));
+    }
 }
