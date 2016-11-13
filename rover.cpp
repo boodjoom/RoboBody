@@ -8,7 +8,7 @@ Rover::Rover()
     QObject::connect(pImpl,SIGNAL(opened()),this,SIGNAL(connected()));
     QObject::connect(pImpl,SIGNAL(closed()),this,SIGNAL(disconnected()));
     QObject::connect(pImpl,SIGNAL(error(ErrCode)),this,SIGNAL(error(ErrCode)));
-    QObject::connect(pImpl,SIGNAL(warning(ErrCode)),this,SIGNAL(warning(ErrCode)));
+    QObject::connect(pImpl,SIGNAL(warning(WarCode)),this,SIGNAL(warning(WarCode)));
 }
 
 Rover::~Rover()
