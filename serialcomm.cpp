@@ -187,7 +187,7 @@ ErrCode SerialComm::write(QByteArray data)
     if(retry == 0)//скорее всего ничего не успели сделать
     {
         qDebug()<<"additional timeout";
-        QThread::msleep(20);
+        QThread::msleep(30);
     }
     if(retry<10)
         return ErrOk;
