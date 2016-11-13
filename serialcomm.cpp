@@ -171,11 +171,11 @@ ErrCode SerialComm::write(QByteArray data)
     //qDebug()<<"write to port "<<toString(data);
     _port->write(data.data(),6);
     int retry=0;
-    _port->flush();
+//    _port->flush();
 //    while (!_port->waitForBytesWritten(10));
     while(retry<10)
     {
-        if(_port->waitForBytesWritten(30))
+        if(_port->waitForBytesWritten(10))
             break;
         else
             ++retry;
