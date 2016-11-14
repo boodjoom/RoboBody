@@ -20,8 +20,10 @@ ErrCode RoverImpl::init(QSettings &settings)
     _serialComm = new SerialComm();
     _serialComm->setModel(_roverModel);
     const QString portName = settings.value("PortName","\\\\.\\COM4").toString();
+    qInfo()<<"Rover PortName = "<<portName;
     _serialComm->setPortName(portName);
     const int boudRate = settings.value("PortRate",9600).toInt();
+    qInfo()<<"Rover PortRate = "<<boudRate;
     _serialComm->setBoudRate(boudRate);
     _commThread = new QThread();
     _serialComm->moveToThread(_commThread);

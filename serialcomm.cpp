@@ -4,7 +4,7 @@
 extern "C"{
 #include "crc16.h"
 }
-#include <QDebug>
+#include <QMessageLogger>
 #include <QMutex>
 #include <QCoreApplication>
 
@@ -310,7 +310,8 @@ bool SerialComm::openImpl()
         if(!_port->open(QIODevice::ReadWrite))
         {
             emit error(ErrOpenFail);
-            qDebug()<<"port "<<portName<<" open error";
+            qFatal("port %s open error",portName.toLatin1().data());
+            std::abort();
         }
         else
         {
@@ -320,7 +321,7 @@ bool SerialComm::openImpl()
             _port->setFlowControl(QSerialPort::NoFlowControl);
             _port->setDataBits(QSerialPort::Data8);
             emit opened();
-            qDebug()<<"port "<<portName<<" opened";
+            qInfo()<<"port "<<portName<<" opened";
             return true;
         }
         return false;
