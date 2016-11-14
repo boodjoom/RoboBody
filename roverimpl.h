@@ -21,6 +21,8 @@ public:
     void openPort();
     void closePort();
     ErrCode setBreaks(bool enabled);
+    double getRefSpeed(ErrCode* err = nullptr);
+    double getRefYaw(ErrCode* err = nullptr);
 signals:
     void open();
     void close();

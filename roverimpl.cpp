@@ -72,7 +72,8 @@ void RoverImpl::setRefYaw(double yaw, QDateTime timeout)
     Q_UNUSED(timeout)
     if(!qFuzzyCompare(yaw+1.0,_yaw+1.0))
     {
-        qDebug()<<"setYaw not implemented";
+        _yaw=yaw;
+        qDebug()<<"native setYaw not implemented";
     }
 }
 
@@ -96,4 +97,14 @@ void RoverImpl::closePort()
 ErrCode RoverImpl::setBreaks(bool enabled)
 {
     qDebug()<<"Not implemented";
+}
+
+double RoverImpl::getRefSpeed(ErrCode *err)
+{
+    return _speed;
+}
+
+double RoverImpl::getRefYaw(ErrCode *err)
+{
+    return _yaw;
 }
