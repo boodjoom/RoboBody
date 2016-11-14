@@ -39,7 +39,7 @@ double Rover::getCurSpeed(ErrCode *err)
 
 double Rover::getRefSpeed(ErrCode *err)
 {
-    pImpl->getRefSpeed(err)
+    pImpl->getRefSpeed(err);
 }
 
 bool Rover::isBreaksEnabled(ErrCode *err)
