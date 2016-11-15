@@ -17,7 +17,7 @@ RoverModel::RoverModel(QSettings &settings, QObject *parent)
     addNewWheelAngle(settings,LeftFrontWheelAngle);
     addNewWheelAngle(settings,LeftBackWheelAngle);
     addNewWheelAngle(settings,RightFrontWheelAngle);
-    addNewWheelAngle(settings,RightFrontWheelAngle);
+    addNewWheelAngle(settings,RightBackWheelAngle);
     deviceIter = devices;
 }
 
