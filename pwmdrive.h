@@ -5,6 +5,7 @@
 
 class PwmDrive : public Drive
 {
+protected:
     enum PwmDriveParams
     {
         RefSpeed=AbstractDevice::RefValue,
@@ -12,6 +13,7 @@ class PwmDrive : public Drive
     };
 public:
     PwmDrive(uint8_t driveAddr);
+    virtual AbstractDevice::DeviceType deviceType();
 };
 
 #endif // PWMDRIVE_H

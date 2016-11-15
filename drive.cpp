@@ -3,7 +3,6 @@
 Drive::Drive(uint8_t driveAddr):AbstractDevice(),addr(driveAddr)
 {
     dataLen = 4;//pack - crc
-
 }
 
 QByteArray Drive::prefix()
@@ -28,4 +27,9 @@ QByteArray Drive::stripPrefix(const QByteArray &data)
         return data;
     else
         return data.right(data.length()-1);
+}
+
+bool Drive::isValid()
+{
+    return (addr != 0);
 }

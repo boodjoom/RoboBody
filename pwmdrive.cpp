@@ -23,3 +23,8 @@ PwmDrive::PwmDrive(uint8_t driveAddr):Drive(driveAddr)
     params[(int)CurSpeed] = data;
     paramIter = params;
 }
+
+AbstractDevice::DeviceType PwmDrive::deviceType()
+{
+    return AbstractDevice::DeviceType_PwmDrive;
+}

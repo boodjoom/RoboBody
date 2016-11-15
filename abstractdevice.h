@@ -12,6 +12,14 @@ public:
         RefValue =1,
         CurValue =2
     };
+    enum DeviceType
+    {
+        DeviceType_Unknown = 0,
+        DeviceType_PwmDrive,
+        DeviceType_AngleController,
+        DeviceType_SpeedController,
+        DeviceType_RCServo
+    };
     AbstractDevice();
     QHash<int, CommData*> params;
     bool hasNext();
@@ -21,6 +29,8 @@ public:
     QHashIterator<int, CommData*> paramIter;
     virtual QByteArray prefix()=0;
     virtual QByteArray stripPrefix(const QByteArray& data)=0;
+    virtual bool isValid()=0;
+    virtual AbstractDevice::DeviceType deviceType();
     uint8_t dataLen;
 };
 

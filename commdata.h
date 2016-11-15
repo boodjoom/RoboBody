@@ -34,6 +34,7 @@ public:
     uint16_t defaultValue;
     bool autoUpdate;
     bool checkAfterWrite;
+    void setDefaultValue();
 };
 
 #endif // COMMDATA_H

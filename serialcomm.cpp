@@ -172,7 +172,7 @@ ErrCode SerialComm::write(QByteArray data)
         return ErrWrongState;
 //    portMutex.lock();
     addCrc(data);
-//    qDebug()<<"write to port "<<toString(data);
+    qDebug()<<"write to port "<<toString(data);
     /*int writen = */_port->write(data);
 //    for(int i = 0;i<data.length();++i)
 //    {
@@ -332,8 +332,15 @@ void SerialComm::nextDev()
 {
     if(model->hasNext())
     {
-        model->next().second->toFront();
-        QTimer::singleShot(30,this,SLOT(nextParam()));
+        QPair<int, AbstractDevice*> devItem = model->next();
+        devItem.second->toFront();
+        if(devItem.second->isValid())
+            QTimer::singleShot(30,this,SLOT(nextParam()));
+        else
+        {
+            qWarning()<<"device "<<devItem.first<<" is not valid";
+            QTimer::singleShot(5,this,SLOT(nextDev()));
+        }
     }
     else
     {
@@ -348,7 +355,7 @@ void SerialComm::nextParam()
     if(dev->hasNext())
     {
         QPair<int, CommData*> paramItem = dev->next();
-        //qDebug()<<"param "<<paramItem.first;
+//        qDebug()<<"param "<<paramItem.first;
         CommData* param = paramItem.second;
         if(param->isChanged())
         {

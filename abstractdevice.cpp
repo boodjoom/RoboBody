@@ -13,3 +13,8 @@ QPair<int, CommData *> AbstractDevice::current()
 }
 
 void AbstractDevice::toFront(){paramIter.toFront();}
+
+AbstractDevice::DeviceType AbstractDevice::deviceType()
+{
+    return DeviceType_Unknown;
+}

@@ -21,7 +21,10 @@ SOURCES += rover.cpp \
     serialcomm.cpp \
     commdata.cpp \
     pwmdrive.cpp \
-    crc16.c
+    crc16.c \
+    roverwheeldrive.cpp \
+    angledrive.cpp \
+    roverwheelangle.cpp
 
 HEADERS += rover.h\
         robobody_global.h \
@@ -36,7 +39,10 @@ HEADERS += rover.h\
     pwmdrive.h \
     RS485.h \
     warcode.h \
-    crc16.h
+    crc16.h \
+    roverwheeldrive.h \
+    angledrive.h \
+    roverwheelangle.h
 
 unix {
     target.path = /usr/lib

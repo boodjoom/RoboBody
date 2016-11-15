@@ -16,7 +16,15 @@ uint16_t CommData::value()
 {return curValue;}
 
 void CommData::setValue(uint16_t val)
-{if(val != curValue)    {changedValue=curValue;curValue=val;changed=true;}}
+{
+    if(val != curValue)
+    {
+        qDebug()<<"CommData::setValue "<<val;
+        changedValue=curValue;
+        curValue=val;
+        changed=true;
+    }
+}
 
 void CommData::updateValue(uint16_t val)
 {if(val != curValue){updatedValue=curValue;curValue=val;updated=true;}}
@@ -25,6 +33,7 @@ void CommData::revertChanged()
 {
     if(changed)
     {
+        qDebug()<<"CommData::revertChanged";
         curValue = changedValue;
         changed = false;
     }
@@ -40,7 +49,7 @@ void CommData::revertUpdated()
 }
 
 void CommData::commitChanged()
-{if(changed){changed=false;}}
+{if(changed){qDebug()<<"CommData::commitChanged";changed=false;}}
 
 void CommData::commitUpdated()
 {if(updated){updated=false;}}
@@ -84,4 +93,9 @@ ErrCode CommData::fromReq(const QByteArray &data, uint8_t shift)
     //qDebug()<<"val="<<QString::number(val,16);
     updateValue(val);
     return ErrOk;
+}
+
+void CommData::setDefaultValue()
+{
+    setValue(defaultValue);
 }

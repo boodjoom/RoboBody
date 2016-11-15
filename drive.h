@@ -10,6 +10,7 @@ public:
     uint8_t addr;
     virtual QByteArray prefix();
     virtual QByteArray stripPrefix(const QByteArray& data);
+    virtual bool isValid();
 };
 
 #endif // DRIVE_H

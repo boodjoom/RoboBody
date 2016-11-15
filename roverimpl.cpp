@@ -8,6 +8,9 @@
 #include <QDebug>
 
 RoverImpl::RoverImpl()
+    : QObject()
+    , _speed(0.0)
+    , _yaw(0.0)
 {
 
 }
@@ -15,14 +18,16 @@ RoverImpl::RoverImpl()
 ErrCode RoverImpl::init(QSettings &settings)
 {
     qDebug()<<"start rover init TH "<<QThread::currentThreadId();
-    settings.beginGroup("Rover");
-    _roverModel = new RoverModel();
+
+    _roverModel = new RoverModel(settings);
     _serialComm = new SerialComm();
     _serialComm->setModel(_roverModel);
+    settings.beginGroup("Rover");
     const QString portName = settings.value("PortName","\\\\.\\COM4").toString();
+    const int boudRate = settings.value("PortRate",9600).toInt();
+    settings.endGroup();
     qInfo()<<"Rover PortName = "<<portName;
     _serialComm->setPortName(portName);
-    const int boudRate = settings.value("PortRate",9600).toInt();
     qInfo()<<"Rover PortRate = "<<boudRate;
     _serialComm->setBoudRate(boudRate);
     _commThread = new QThread();
@@ -37,7 +42,7 @@ ErrCode RoverImpl::init(QSettings &settings)
     connect(_commThread, SIGNAL(finished()), _commThread, SLOT(deleteLater()),Qt::QueuedConnection);
     connect(_serialComm, SIGNAL(error(ErrCode)),this,SIGNAL(error(ErrCode)));
     connect(_serialComm, SIGNAL(warning(WarCode)),this,SIGNAL(warning(WarCode)));
-    settings.endGroup();
+
     //qDebug()<<"start thread TH "<<QThread::currentThreadId();
     //_serialComm->start();
     _commThread->start();
@@ -46,34 +51,36 @@ ErrCode RoverImpl::init(QSettings &settings)
 
 void RoverImpl::setRefSpeed(double speed, QDateTime timeout)
 {
+//    qDebug()<<"setSpeed "<<speed;
     Q_UNUSED(timeout)
     if(!qFuzzyCompare(speed+1.0,_speed+1.0))
     {
-        qDebug()<<"setSpeed "<<speed;
         _speed=speed;
-        uint16_t nativeSpeed;
-        if(_speed>0.1)
-            nativeSpeed = 4095 + 3000;
-        else if(_speed<-0.1)
-            nativeSpeed = 4095 - 3000;
-        else
-            nativeSpeed = 4095;
-        _roverModel->devices[RoverModel::LeftFrontWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
-        _roverModel->devices[RoverModel::LeftMiddleWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
-        _roverModel->devices[RoverModel::LeftBackWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
-        _roverModel->devices[RoverModel::WrightFrontWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
-        _roverModel->devices[RoverModel::WrightMiddleWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
-        _roverModel->devices[RoverModel::WrightBackWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+        _roverModel->setRefSpeed(_speed);
+//        uint16_t nativeSpeed;
+//        if(_speed>0.1)
+//            nativeSpeed = 4095 + 3000;
+//        else if(_speed<-0.1)
+//            nativeSpeed = 4095 - 3000;
+//        else
+//            nativeSpeed = 4095;
+//        _roverModel->devices[RoverModel::LeftFrontWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+//        _roverModel->devices[RoverModel::LeftMiddleWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+//        _roverModel->devices[RoverModel::LeftBackWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+//        _roverModel->devices[RoverModel::WrightFrontWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+//        _roverModel->devices[RoverModel::WrightMiddleWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
+//        _roverModel->devices[RoverModel::WrightBackWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
     }
 }
 
 void RoverImpl::setRefYaw(double yaw, QDateTime timeout)
 {
+//    qDebug()<<"setYaw "<<yaw;
     Q_UNUSED(timeout)
     if(!qFuzzyCompare(yaw+1.0,_yaw+1.0))
     {
         _yaw=yaw;
-        qDebug()<<"native setYaw not implemented";
+        _roverModel->setRefAngle(_yaw);
     }
 }
 
@@ -97,6 +104,7 @@ void RoverImpl::closePort()
 ErrCode RoverImpl::setBreaks(bool enabled)
 {
     qDebug()<<"Not implemented";
+    return ErrNotImplemented;
 }
 
 double RoverImpl::getRefSpeed(ErrCode *err)

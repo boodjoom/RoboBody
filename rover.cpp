@@ -35,16 +35,17 @@ ErrCode Rover::setRefSpeed(double speed)
 
 double Rover::getCurSpeed(ErrCode *err)
 {
+    return 0.0;
 }
 
 double Rover::getRefSpeed(ErrCode *err)
 {
-    pImpl->getRefSpeed(err);
+    return pImpl->getRefSpeed(err);
 }
 
 bool Rover::isBreaksEnabled(ErrCode *err)
 {
-
+    return false;
 }
 
 ErrCode Rover::setBreaksEnabled(bool enabled)
@@ -54,17 +55,18 @@ ErrCode Rover::setBreaksEnabled(bool enabled)
 
 double Rover::getRefYaw(ErrCode *err)
 {
-    pImpl->getRefYaw(err);
+    return pImpl->getRefYaw(err);
 }
 
 double Rover::getCurYaw(ErrCode *err)
 {
-
+    return 0.0;
 }
 
 ErrCode Rover::setRefYaw(double yaw)
 {
     pImpl->setRefYaw(yaw,QDateTime::currentDateTime());
+    return ErrOk;
 }
 
 void Rover::connect()
