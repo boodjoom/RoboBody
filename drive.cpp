@@ -1,8 +1,19 @@
 #include "drive.h"
+#include "RS485.h"
 
 Drive::Drive(uint8_t driveAddr):AbstractDevice(),addr(driveAddr)
 {
     dataLen = 4;//pack - crc
+    CommData* data = new CommData();
+    data->autoUpdate=false;
+    data->autoWrite=false;
+    data->defaultValue=0;
+    data->readCode = 0;
+    data->writeCode = START_FCN;
+    data->checkAfterWrite = false;
+    data->setValue(1);
+    params[(int)AbstractDevice::SetEnabled] = data;
+    paramIter=params;
 }
 
 QByteArray Drive::prefix()

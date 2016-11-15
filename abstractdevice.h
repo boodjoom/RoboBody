@@ -10,7 +10,9 @@ public:
     enum DeviceParams
     {
         RefValue =1,
-        CurValue =2
+        CurValue =2,
+        SetEnabled,
+        SetDisabled
     };
     enum DeviceType
     {

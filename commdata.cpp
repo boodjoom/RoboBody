@@ -1,7 +1,10 @@
 #include "commdata.h"
 #include <QDebug>
 
-CommData::CommData()
+CommData::CommData():
+    curValue(55555)
+  , changedValue(55555)
+  , updatedValue(55555)
 {
 
 }
