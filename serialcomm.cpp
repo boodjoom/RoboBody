@@ -335,16 +335,16 @@ void SerialComm::nextDev()
         QPair<int, AbstractDevice*> devItem = model->next();
         devItem.second->toFront();
         if(devItem.second->isValid())
-            QTimer::singleShot(30,this,SLOT(nextParam()));
+            QTimer::singleShot(10,this,SLOT(nextParam()));
         else
         {
             qWarning()<<"device "<<devItem.first<<" is not valid";
-            QTimer::singleShot(5,this,SLOT(nextDev()));
+            QTimer::singleShot(1,this,SLOT(nextDev()));
         }
     }
     else
     {
-        QTimer::singleShot(30,this,SLOT(run()));
+        QTimer::singleShot(10,this,SLOT(run()));
     }
 }
 
@@ -354,6 +354,7 @@ void SerialComm::nextParam()
     AbstractDevice* dev = devItem.second;
     if(dev->hasNext())
     {
+        int nextParamTimeout=10;
         QPair<int, CommData*> paramItem = dev->next();
 //        qDebug()<<"param "<<paramItem.first;
         CommData* param = paramItem.second;
@@ -399,11 +400,13 @@ void SerialComm::nextParam()
             QByteArray answer = read(dev->prefix()+param->readReq(),dev->dataLen);
             param->fromReq(dev->stripPrefix(answer));
             qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" value="<<param->value();
-        }
-        QTimer::singleShot(30,this,SLOT(nextParam()));
+        } else //nothing to be done
+            nextParamTimeout=1;
+        QTimer::singleShot(nextParamTimeout,this,SLOT(nextParam()));
+
     }
     else
     {
-        QTimer::singleShot(30,this,SLOT(nextDev()));
+        QTimer::singleShot(10,this,SLOT(nextDev()));
     }
 }
