@@ -27,9 +27,9 @@ ErrCode Rover::deInit()
     return ErrOk;
 }
 
-ErrCode Rover::setRefSpeed(double speed)
+ErrCode Rover::setRefSpeed(double speed, unsigned long long timeout)
 {
-    pImpl->setRefSpeed(speed,QDateTime::currentDateTime());
+    pImpl->setRefSpeed(speed,timeout);
     return ErrOk;
 }
 
@@ -65,7 +65,7 @@ double Rover::getCurYaw(ErrCode *err)
 
 ErrCode Rover::setRefYaw(double yaw)
 {
-    pImpl->setRefYaw(yaw,QDateTime::currentDateTime());
+    pImpl->setRefYaw(yaw,0);
     return ErrOk;
 }
 

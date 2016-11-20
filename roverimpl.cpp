@@ -6,13 +6,15 @@
 #include "rovermodel.h"
 #include <QThread>
 #include <QDebug>
+#include <QTimer>
 
 RoverImpl::RoverImpl()
     : QObject()
     , _speed(0.0)
     , _yaw(0.0)
 {
-
+    _refSpeedTimer = new QTimer(this);
+    connect(_refSpeedTimer,SIGNAL(timeout()), this, SLOT(onRefSpeedTimeout()));
 }
 
 ErrCode RoverImpl::init(QSettings &settings)
@@ -49,31 +51,24 @@ ErrCode RoverImpl::init(QSettings &settings)
     return ErrOk;
 }
 
-void RoverImpl::setRefSpeed(double speed, QDateTime timeout)
+void RoverImpl::setRefSpeed(double speed, quint64 timeout)
 {
 //    qDebug()<<"setSpeed "<<speed;
-    Q_UNUSED(timeout)
     if(!qFuzzyCompare(speed+1.0,_speed+1.0))
     {
         _speed=speed;
         _roverModel->setRefSpeed(_speed);
-//        uint16_t nativeSpeed;
-//        if(_speed>0.1)
-//            nativeSpeed = 4095 + 3000;
-//        else if(_speed<-0.1)
-//            nativeSpeed = 4095 - 3000;
-//        else
-//            nativeSpeed = 4095;
-//        _roverModel->devices[RoverModel::LeftFrontWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
-//        _roverModel->devices[RoverModel::LeftMiddleWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
-//        _roverModel->devices[RoverModel::LeftBackWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
-//        _roverModel->devices[RoverModel::WrightFrontWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
-//        _roverModel->devices[RoverModel::WrightMiddleWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
-//        _roverModel->devices[RoverModel::WrightBackWheelDrive]->params[AbstractDevice::RefValue]->setValue(nativeSpeed);
     }
+    if(timeout>0)
+    {
+        _refSpeedTimer->setInterval(timeout);
+        QMetaObject::invokeMethod(_refSpeedTimer,"start");
+    }
+    else
+        QMetaObject::invokeMethod(_refSpeedTimer,"stop");
 }
 
-void RoverImpl::setRefYaw(double yaw, QDateTime timeout)
+void RoverImpl::setRefYaw(double yaw, quint64 timeout)
 {
 //    qDebug()<<"setYaw "<<yaw;
     Q_UNUSED(timeout)
@@ -115,4 +110,9 @@ double RoverImpl::getRefSpeed(ErrCode *err)
 double RoverImpl::getRefYaw(ErrCode *err)
 {
     return _yaw;
+}
+
+void RoverImpl::onRefSpeedTimeout()
+{
+    setRefSpeed(0,0);
 }

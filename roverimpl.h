@@ -8,6 +8,7 @@
 
 class RoverModel;
 class SerialComm;
+class QTimer;
 
 class RoverImpl: public QObject
 {
@@ -15,8 +16,8 @@ class RoverImpl: public QObject
 public:
     RoverImpl();
     ErrCode init(QSettings &settings);
-    void setRefSpeed(double speed, QDateTime timeout);
-    void setRefYaw(double yaw, QDateTime timeout);
+    void setRefSpeed(double speed, quint64 timeout);
+    void setRefYaw(double yaw, quint64 timeout);
     void deInit();
     void openPort();
     void closePort();
@@ -38,6 +39,9 @@ private:
     SerialComm* _serialComm;
     QThread* _commThread;
     RoverModel* _roverModel;
+    QTimer* _refSpeedTimer;
+private slots:
+    void onRefSpeedTimeout();
 };
 
 #endif // ROVERIMPL_H

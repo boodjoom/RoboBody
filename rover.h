@@ -16,7 +16,7 @@ public:
     ~Rover();
     ErrCode init(QSettings& settings);
     ErrCode deInit();
-    ErrCode setRefSpeed(double speed);
+    ErrCode setRefSpeed(double speed, unsigned long long timeout = 0);
     double getCurSpeed(ErrCode* err = nullptr);
     double getRefSpeed(ErrCode* err = nullptr);
     ErrCode setBreaksEnabled(bool enabled);
