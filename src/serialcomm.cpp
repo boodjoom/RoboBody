@@ -20,7 +20,11 @@ SerialComm::SerialComm(QObject *parent)
     : QObject(parent)
     , _opened(false)
 {
+#ifndef USE_EXT_SERIALPORT
     _port = new QSerialPort(this);
+#else
+    _port = new QextSerialPort(QextSerialPort::Polling,this);
+#endif
 }
 
 SerialComm::~SerialComm()
@@ -34,7 +38,10 @@ void SerialComm::setPortName(const QString &name){
 
 }
 
-void SerialComm::setBoudRate(int rate){boudRate=rate;_port->setBaudRate(boudRate);}
+void SerialComm::setBoudRate(int rate)
+{
+    boudRate=rate;
+}
 
 bool SerialComm::isOpened()
 {
@@ -315,11 +322,22 @@ bool SerialComm::openImpl()
         }
         else
         {
+
+#ifndef USE_EXT_SERIALPORT
             _port->setBaudRate(boudRate);
             _port->setParity(QSerialPort::NoParity);
             _port->setStopBits(QSerialPort::OneStop);
             _port->setFlowControl(QSerialPort::NoFlowControl);
             _port->setDataBits(QSerialPort::Data8);
+#else
+            _port->setBaudRate(static_cast<BaudRateType>(boudRate));
+            _port->setParity(PAR_NONE);
+            _port->setDataBits(DATA_8);
+            _port->setStopBits(STOP_1);
+            //port.setBreakEnabled(false);
+            _port->setFlowControl(FLOW_OFF);
+            //port.setTextModeEnabled(false);
+#endif
             emit opened();
             qInfo()<<"port "<<portName<<" opened";
             return true;

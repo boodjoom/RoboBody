@@ -1,0 +1,22 @@
+unix {
+    EXTSERIALPORT_LIB_NAME = qextserialport
+    greaterThan(QT_MAJOR_VERSION, 4): EXTSERIALPORT_LIB_NAME = Qt5ExtSerialPort
+
+    target.path = /usr/lib
+    INSTALLS += target
+}
+win32 {   
+
+    CONFIG(debug, debug|release) {    
+        #EXTSERIALPORT_LIB_NAME = Qt5ExtSerialPortd1
+        EXTSERIALPORT_LIB_NAME = qextserialportd1
+        greaterThan(QT_MAJOR_VERSION, 4): EXTSERIALPORT_LIB_NAME = Qt5ExtSerialPortd1
+    }
+    CONFIG(release, debug|release) {
+        #EXTSERIALPORT_LIB_NAME = Qt5ExtSerialPort1
+        EXTSERIALPORT_LIB_NAME = qextserialportd1
+        greaterThan(QT_MAJOR_VERSION, 4): EXTSERIALPORT_LIB_NAME = Qt5ExtSerialPort1
+    }
+}
+
+LIBS += -l$$EXTSERIALPORT_LIB_NAME

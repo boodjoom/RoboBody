@@ -3,7 +3,14 @@
 
 #include "stdint.h"
 #include <QObject>
+
+#define USE_EXT_SERIALPORT
+
+#ifndef USE_EXT_SERIALPORT
 #include <QtSerialPort/QSerialPort>
+#else
+#include "qextserialport/qextserialport.h"
+#endif
 #include <QMutex>
 #include <QTimer>
 #include "errcode.h"
@@ -20,7 +27,7 @@ public:
     void setModel(RoverModel* m){model=m;}
     void setPortName(const QString& name);
     void setBoudRate(int rate);
-    void setPort(QSerialPort* port){_port=port;}
+//    void setPort(QSerialPort* port){_port=port;}
     bool isOpened();
 signals:
 //    void finished();
@@ -43,7 +50,12 @@ protected:
     QByteArray read(QByteArray req, uint8_t dataBytesToRead, ErrCode* err = nullptr);
     QString portName;
     int boudRate;
-    QSerialPort* _port;
+    #ifndef USE_EXT_SERIALPORT
+    QSerialPort*
+    #else
+    QextSerialPort*
+    #endif
+            _port;
     bool checkCrc(QByteArray& data);
     void removeLeadingZeros(QByteArray &data);
     bool _opened;

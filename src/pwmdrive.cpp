@@ -8,7 +8,7 @@ PwmDrive::PwmDrive(uint8_t driveAddr):Drive(driveAddr)
     data->defaultValue=4095;
     data->readCode = READ_REFSPEED_FCN;
     data->writeCode = WRITE_REFSPEED_FCN;
-    data->checkAfterWrite = false;
+    data->checkAfterWrite = true;
     data->setValue(data->defaultValue);
     data->commitChanged();
     params[(int)RefSpeed] = data;
