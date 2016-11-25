@@ -1,2 +1,5 @@
 obj/
 lib/
+3rdparty/moc/
+moc/
+*.user
