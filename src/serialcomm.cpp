@@ -9,6 +9,8 @@ extern "C"{
 #include <QCoreApplication>
 #include <QElapsedTimer>
 
+//#define SERIAL_DEBUG
+
 QString toString(const QByteArray& data)
 {
     QString str;
@@ -175,47 +177,27 @@ void SerialComm::run()
 
 ErrCode SerialComm::write(QByteArray data)
 {
+#ifdef SERIAL_DEBUG
     QElapsedTimer t;
     qDebug()<<"start write";
-
+#endif
     if(false || !_port->isOpen())
         return ErrWrongState;
-    t.start();
-//    portMutex.lock();
-    addCrc(data);
-    qDebug()<<"write to port "<<toString(data);
-    /*int writen = */_port->write(data);
-//    for(int i = 0;i<data.length();++i)
-//    {
-//        char buf = data[i];
-//        _port->write(&buf,1);
-//        QThread::msleep(1);
-//    }
-    //qDebug()<<"Writen="<<writen;
-//    int retry=0;
-    _port->flush();
-//    while (!_port->waitForBytesWritten(10));
-//    while(retry<10)
-//    {
-//        if(_port->waitForBytesWritten(10))
-//            break;
-//        else
-//            ++retry;
-//    }
-    _port->waitForBytesWritten(-1);
 
-//    qDebug()<<"Writing dobne retry="<<retry;
-//    portMutex.unlock();
-//    if(retry == 0)//скорее всего ничего не успели сделать
-//    {
-//        qDebug()<<"additional timeout";
-        //QThread::msleep(30);
-//    }
-    //QCoreApplication::processEvents();
+    addCrc(data);
+#ifdef SERIAL_DEBUG
+    t.start();
+    qDebug()<<"write to port "<<toString(data);
+#endif
+    /*int writen = */_port->write(data);
+    _port->flush();
+    _port->waitForBytesWritten(-1);
     if(!_port->lastError())
     {
+#ifdef SERIAL_DEBUG
         qDebug()<<"SerialComm: write ok, elapsed: "<<t.elapsed();
-        return ErrOk;\
+#endif
+        return ErrOk;
     }
     else
     {
@@ -247,7 +229,7 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
         errCode = write(req);
         if(errCode != ErrOk)
         {
-             qDebug()<<"write req to port fail";
+             qCritical()<<"write req to port fail";
         }
     }
     QByteArray answer;
@@ -256,8 +238,10 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
     if(errCode == ErrOk)
     {
         retry=0;
+#ifdef SERIAL_DEBUG
         QElapsedTimer t;
         t.start();
+#endif
         while(retry<10 && answer.size()<totalBytesToRead)
         {
             int r = 20;
@@ -273,16 +257,24 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
             }
             ++retry;
         }
+#ifdef SERIAL_DEBUG
         qDebug()<<"read from port "<<toString(answer)<<"retry="<<retry<<" elapsed="<<t.elapsed();
+#endif
         if(!_port->lastError() && answer.size()==totalBytesToRead)
         {
+#ifdef SERIAL_DEBUG
             qDebug()<<"read OK";
+#endif
             errCode=ErrOk;
         }
         else
         {
             errCode=ErrFail;
-            qDebug()<<"read from port fail, error: "<<_port->errorString();
+            qCritical()<<"read from port fail, error: "<<_port->errorString();
+            if(!_port->lastError())
+            {
+                qInfo()<<"Check device params";
+            }
         }
     }
     if(errCode == ErrOk)
@@ -291,13 +283,12 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
             answer = answer.left(totalBytesToRead);
         if(!checkCrc(answer))
         {
-            //qDebug()<<"crc error";
+            qCritical()<<"SerialComm: wrong crc";
             errCode = ErrWrongCrc;
             answer.clear();
         }
         else
         {
-            //qDebug()<<"strip crc data:"<<toString(answer);
             answer = answer.left(dataBytesToRead);
         }
     }
@@ -353,14 +344,13 @@ bool SerialComm::openImpl()
             _port->setStopBits(STOP_1);
             //port.setBreakEnabled(false);
             _port->setFlowControl(FLOW_OFF);
-            //port.setTextModeEnabled(false);
+            _port->setTextModeEnabled(false);
 #endif
             emit opened();
             qInfo()<<"port "<<portName<<" opened";
             return true;
         }
         return false;
-        //    portMutex.unlock();
 }
 
 void SerialComm::nextDev()
@@ -401,17 +391,21 @@ void SerialComm::nextParam()
             {
                 if(param->checkAfterWrite)
                 {
+#ifdef SERIAL_DEBUG
                     qDebug()<<"Test read after write";
+#endif
                     param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq(),dev->dataLen)));
                     if(param->isUpdated())
                     {
-                        qDebug()<<"Test read failed, actual value="<<param->value();
+                        qCritical()<<"Test read failed, actual value="<<param->value();
                         emit error(ErrSetParamFail);
                         param->revertUpdated();
                     }
                     else
                     {
+#ifdef SERIAL_DEBUG
                         qDebug()<<"Test read OK, actual value="<<param->value();
+#endif
                         param->commitChanged();
                     }
                 }
@@ -420,7 +414,7 @@ void SerialComm::nextParam()
             }
             else
             {
-                qDebug()<<"write failed";
+                qCritical()<<"SerialComm: write request failed";
                 emit error(ErrWriteFail);
             }
         }
