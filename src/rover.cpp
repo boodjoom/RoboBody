@@ -63,6 +63,11 @@ double Rover::getCurYaw(ErrCode *err)
     return 0.0;
 }
 
+double Rover::getTravel(ErrCode *err)
+{
+    return pImpl->getTravel(err);
+}
+
 ErrCode Rover::setRefYaw(double yaw)
 {
     pImpl->setRefYaw(yaw,0);

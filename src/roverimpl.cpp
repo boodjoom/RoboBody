@@ -12,6 +12,9 @@ RoverImpl::RoverImpl()
     : QObject()
     , _speed(0.0)
     , _yaw(0.0)
+    , _distanceApproximation(0.0)
+    , _intervalCorrection(0.0)
+    , _speedApproximation(0.0)
 {
     _refSpeedTimer = new QTimer(this);
     connect(_refSpeedTimer,SIGNAL(timeout()), this, SLOT(onRefSpeedTimeout()));
@@ -25,8 +28,15 @@ ErrCode RoverImpl::init(QSettings &settings)
     _serialComm = new SerialComm();
     _serialComm->setModel(_roverModel);
     settings.beginGroup("Rover");
+    bool ok;
     const QString portName = settings.value("PortName","\\\\.\\COM4").toString();
     const int boudRate = settings.value("PortRate",9600).toInt();
+    _intervalCorrection = settings.value("VehicleIntervalCorrection",0.4).toDouble(&ok);
+    if(!ok)
+        _intervalCorrection=0.4;
+    _speedApproximation = settings.value("VehicleSpeedAproximation",1.0).toDouble(&ok);
+    if(!ok)
+        _speedApproximation=1.0;
     settings.endGroup();
     qInfo()<<"Rover PortName = "<<portName;
     _serialComm->setPortName(portName);
@@ -51,11 +61,38 @@ ErrCode RoverImpl::init(QSettings &settings)
     return ErrOk;
 }
 
+bool isZero(double value)
+{
+    return value > -0.05 && value <0.05;
+}
+
+bool isPositive(double value)
+{
+    return value > 0.05;
+}
+
+bool isNegative(double value)
+{
+    return value < 0.05;
+}
+
 void RoverImpl::setRefSpeed(double speed, quint64 timeout)
 {
 //    qDebug()<<"setSpeed "<<speed;
     if(!qFuzzyCompare(speed+1.0,_speed+1.0))
     {
+        if(!isZero(speed) && isZero(_speed))
+        {
+            _speedOnTimer.restart();
+        } else
+        if(isZero(speed) && isPositive(_speed))
+        {
+            _distanceApproximation += approximateDistance((0.001)*(double)_speedOnTimer.elapsed());
+        } else
+        if(isZero(speed) && isNegative(_speed))
+        {
+            _distanceApproximation += approximateDistance((0.001)*(double)_speedOnTimer.elapsed());
+        }
         _speed=speed;
         _roverModel->setRefSpeed(_speed);
     }
@@ -112,7 +149,18 @@ double RoverImpl::getRefYaw(ErrCode *err)
     return _yaw;
 }
 
+double RoverImpl::getTravel(ErrCode *err)
+{
+    Q_UNUSED(err)
+    return _distanceApproximation;
+}
+
 void RoverImpl::onRefSpeedTimeout()
 {
     setRefSpeed(0,0);
+}
+
+double RoverImpl::approximateDistance(double newSpeedOnInterval)
+{
+    return (newSpeedOnInterval - _intervalCorrection)*_speedApproximation;
 }

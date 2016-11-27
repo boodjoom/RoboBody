@@ -24,6 +24,7 @@ public:
     ErrCode setRefYaw(double yaw);
     double getRefYaw(ErrCode* err = nullptr);
     double getCurYaw(ErrCode* err = nullptr);
+    double getTravel(ErrCode* err = nullptr);
 public slots:
     void connect();
     void disconnect();

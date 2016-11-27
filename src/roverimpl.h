@@ -5,6 +5,7 @@
 #include <QSettings>
 #include "errcode.h"
 #include "warcode.h"
+#include <QElapsedTimer>
 
 class RoverModel;
 class SerialComm;
@@ -24,6 +25,7 @@ public:
     ErrCode setBreaks(bool enabled);
     double getRefSpeed(ErrCode* err = nullptr);
     double getRefYaw(ErrCode* err = nullptr);
+    double getTravel(ErrCode* err = nullptr);
 signals:
     void open();
     void close();
@@ -42,6 +44,13 @@ private:
     QTimer* _refSpeedTimer;
 private slots:
     void onRefSpeedTimeout();
+private:
+    double _distanceApproximation;
+    QElapsedTimer _speedOnTimer;
+    double approximateDistance(double newSpeedOnInterval);
+    double _intervalCorrection;
+    double _speedApproximation;
+
 };
 
 #endif // ROVERIMPL_H
