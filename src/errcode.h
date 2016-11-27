@@ -1,6 +1,8 @@
 #ifndef ERRCODE_H
 #define ERRCODE_H
 
+#include <QObject>
+
 enum ErrCode
 {
     ErrOk =0,
@@ -14,5 +16,7 @@ enum ErrCode
     ErrWriteFail,
     ErrNotImplemented
 };
+
+Q_DECLARE_METATYPE(ErrCode)
 
 #endif // ERRCODE_H

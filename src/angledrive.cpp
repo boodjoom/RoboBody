@@ -14,7 +14,7 @@ AngleDrive::AngleDrive(uint8_t addr)
     data->commitChanged();
     params[(int)RefAngle] = data;
     data = new CommData();
-    data->autoUpdate=false;
+    data->autoUpdate=true;
     data->autoWrite=false;
     data->defaultValue=7777;
     data->readCode = READ_ADC_FCN;

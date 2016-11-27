@@ -7,6 +7,7 @@ extern "C"{
 #include <QMessageLogger>
 #include <QMutex>
 #include <QCoreApplication>
+#include <QElapsedTimer>
 
 QString toString(const QByteArray& data)
 {
@@ -174,9 +175,12 @@ void SerialComm::run()
 
 ErrCode SerialComm::write(QByteArray data)
 {
-//    qDebug()<<"start write";
+    QElapsedTimer t;
+    qDebug()<<"start write";
+
     if(false || !_port->isOpen())
         return ErrWrongState;
+    t.start();
 //    portMutex.lock();
     addCrc(data);
     qDebug()<<"write to port "<<toString(data);
@@ -188,16 +192,18 @@ ErrCode SerialComm::write(QByteArray data)
 //        QThread::msleep(1);
 //    }
     //qDebug()<<"Writen="<<writen;
-    int retry=0;
-//    _port->flush();
+//    int retry=0;
+    _port->flush();
 //    while (!_port->waitForBytesWritten(10));
-    while(retry<10)
-    {
-        if(_port->waitForBytesWritten(10))
-            break;
-        else
-            ++retry;
-    }
+//    while(retry<10)
+//    {
+//        if(_port->waitForBytesWritten(10))
+//            break;
+//        else
+//            ++retry;
+//    }
+    _port->waitForBytesWritten(-1);
+
 //    qDebug()<<"Writing dobne retry="<<retry;
 //    portMutex.unlock();
 //    if(retry == 0)//скорее всего ничего не успели сделать
@@ -206,11 +212,14 @@ ErrCode SerialComm::write(QByteArray data)
         //QThread::msleep(30);
 //    }
     //QCoreApplication::processEvents();
-    if(retry<10)
-        return ErrOk;
+    if(!_port->lastError())
+    {
+        qDebug()<<"SerialComm: write ok, elapsed: "<<t.elapsed();
+        return ErrOk;\
+    }
     else
     {
-        _port->flush();
+        qCritical()<<"SerialComm: write error: "<<_port->errorString();
         return ErrFail;
     }
 }
@@ -234,7 +243,7 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
     }
     if(errCode == ErrOk)
     {
-        //_port->readAll();
+        _port->readAll();//flush read buffer
         errCode = write(req);
         if(errCode != ErrOk)
         {
@@ -247,25 +256,33 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
     if(errCode == ErrOk)
     {
         retry=0;
-        while(retry<10)
+        QElapsedTimer t;
+        t.start();
+        while(retry<10 && answer.size()<totalBytesToRead)
         {
-            if(_port->waitForReadyRead(30))
+            int r = 20;
+            while(r && !_port->bytesAvailable())
             {
-            answer += _port->readAll();
-            removeLeadingZeros(answer);
-            if(answer.length()>=totalBytesToRead)
-                break;
-            else
-                ++retry;
+                QThread::msleep(5);
+                --r;
             }
+            if(r)
+            {
+                answer += _port->read(totalBytesToRead-answer.size());
+                removeLeadingZeros(answer);
+            }
+            ++retry;
         }
-        //qDebug()<<"read from port "<<toString(answer)<<"retry="<<retry;
-        if(retry<10)
+        qDebug()<<"read from port "<<toString(answer)<<"retry="<<retry<<" elapsed="<<t.elapsed();
+        if(!_port->lastError() && answer.size()==totalBytesToRead)
+        {
+            qDebug()<<"read OK";
             errCode=ErrOk;
+        }
         else
         {
             errCode=ErrFail;
-            qDebug()<<"read from port fail";
+            qDebug()<<"read from port fail, error: "<<_port->errorString();
         }
     }
     if(errCode == ErrOk)
