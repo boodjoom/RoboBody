@@ -155,6 +155,16 @@ double RoverImpl::getTravel(ErrCode *err)
     return _distanceApproximation;
 }
 
+void RoverImpl::startManip()
+{
+
+}
+
+ManipState RoverImpl::getManipState()
+{
+
+}
+
 void RoverImpl::onRefSpeedTimeout()
 {
     setRefSpeed(0,0);

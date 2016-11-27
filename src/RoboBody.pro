@@ -42,7 +42,8 @@ HEADERS += rover.h\
     crc16.h \
     roverwheeldrive.h \
     angledrive.h \
-    roverwheelangle.h
+    roverwheelangle.h \
+    manipstate.h
 
 unix {
     target.path = /usr/lib

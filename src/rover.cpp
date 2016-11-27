@@ -68,6 +68,16 @@ double Rover::getTravel(ErrCode *err)
     return pImpl->getTravel(err);
 }
 
+void Rover::startManip()
+{
+    pImpl->startManip();
+}
+
+ManipState Rover::getManipState()
+{
+    return pImpl->getManipState();
+}
+
 ErrCode Rover::setRefYaw(double yaw)
 {
     pImpl->setRefYaw(yaw,0);

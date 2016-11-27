@@ -6,6 +6,7 @@
 #include "errcode.h"
 #include "warcode.h"
 #include <QElapsedTimer>
+#include "manipstate.h"
 
 class RoverModel;
 class SerialComm;
@@ -26,6 +27,8 @@ public:
     double getRefSpeed(ErrCode* err = nullptr);
     double getRefYaw(ErrCode* err = nullptr);
     double getTravel(ErrCode* err = nullptr);
+    void startManip();
+    ManipState getManipState();
 signals:
     void open();
     void close();

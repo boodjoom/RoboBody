@@ -6,6 +6,8 @@
 #include "robobody_global.h"
 #include "errcode.h"
 #include "warcode.h"
+#include "manipstate.h"
+
 class RoverImpl;
 
 class ROBOBODYSHARED_EXPORT Rover: public QObject
@@ -25,6 +27,8 @@ public:
     double getRefYaw(ErrCode* err = nullptr);
     double getCurYaw(ErrCode* err = nullptr);
     double getTravel(ErrCode* err = nullptr);
+    void startManip();
+    ManipState getManipState();
 public slots:
     void connect();
     void disconnect();
