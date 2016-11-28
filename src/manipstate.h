@@ -1,6 +1,6 @@
 #ifndef MANIPSTATE_H
 #define MANIPSTATE_H
 
-enum class ManipState{Idle,Moving,AtBase};
+enum class ManipState{Unknown,Idle,Moving,AtBase};
 
 #endif // MANIPSTATE_H

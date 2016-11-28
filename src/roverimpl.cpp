@@ -157,12 +157,13 @@ double RoverImpl::getTravel(ErrCode *err)
 
 void RoverImpl::startManip()
 {
-
+  qDebug()<<"RoverImpl::startManip not implemented";
 }
 
 ManipState RoverImpl::getManipState()
 {
-
+  qDebug()<<"RoverImpl::getManipState not implemented";
+  return ManipState::Unknown;
 }
 
 void RoverImpl::onRefSpeedTimeout()
