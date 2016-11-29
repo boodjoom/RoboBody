@@ -424,7 +424,7 @@ void SerialComm::nextParam()
             qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto write";
             write(dev->prefix()+param->writeReq()+dev->suffix());
         }
-        else if(param->autoUpdate && QDateTime::currentMSecsSinceEpoch() >= param->autoUpdateLastTime + param->autoUpdatePeriod)
+        else if(param->autoUpdate && (QDateTime::currentMSecsSinceEpoch() >= (param->autoUpdateLastTime + param->autoUpdatePeriod)))
         {
             //qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto update "<<toString(param->readReq());
             QByteArray answer = read(dev->prefix()+param->readReq()+dev->suffix(),dev->responseDataLen);
