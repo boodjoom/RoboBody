@@ -36,7 +36,7 @@ public:
     bool checkAfterWrite;
     void setDefaultValue();
     uint16_t autoUpdatePeriod;
-    uint32_t autoUpdateLastTime;
+    uint64_t autoUpdateLastTime;
 };
 
 #endif // COMMDATA_H
