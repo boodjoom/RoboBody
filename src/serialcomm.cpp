@@ -243,9 +243,9 @@ QByteArray SerialComm::read(QByteArray req, uint8_t dataBytesToRead, ErrCode *er
         QElapsedTimer t;
         t.start();
 #endif
-        while(retry<10 && answer.size()<totalBytesToRead)
+        while(retry<5 && answer.size()<totalBytesToRead)
         {
-            int r = 20;
+            int r = 5;
             while(r && !_port->bytesAvailable())
             {
                 QThread::msleep(5);
