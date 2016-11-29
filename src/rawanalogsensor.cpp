@@ -27,6 +27,9 @@ RawAnalogSensor::RawAnalogSensor(QSettings &settings)
          qCritical()<<"MinNativeValue: invalid value";
 
      _distance = _maxNativeValue - _minNativeValue;
+
+     qInfo()<<"RawAnalogSensor "<<addr<<" with I:"<<index<<" MIN:"<<_minNativeValue<<" MAX:"<<_maxNativeValue<<" added";
+
 }
 
 double RawAnalogSensor::value()

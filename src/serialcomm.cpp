@@ -10,7 +10,7 @@ extern "C"{
 #include <QElapsedTimer>
 #include <QDateTime>
 
-//#define SERIAL_DEBUG
+#define SERIAL_DEBUG
 
 QString toString(const QByteArray& data)
 {
