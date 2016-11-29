@@ -87,8 +87,15 @@ ManipState Rover::getManipState()
 
 QString Rover::toString(ManipState state)
 {
-    static int enumIdx = Rover::staticMetaObject.indexOfEnumerator("ManipState");
-    return Rover::staticMetaObject.enumerator(enumIdx).valueToKey((int)state);
+    switch(state)
+    {
+    case ManipState::AtHome:return "home";
+    case ManipState::AtTarget:return "target";
+    case ManipState::AtBase:return "base";
+    case ManipState::Moving:return "moving";
+    case ManipState::Idle:return "idle";
+    default: return "unknown";
+    };
 }
 
 double Rover::getBattery(ErrCode *err)

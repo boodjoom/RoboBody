@@ -4,11 +4,10 @@
 AnalogSensor::AnalogSensor(uint8_t deviceAddr, uint8_t adcIndex)
     : AbstractDevice()
     , addr(deviceAddr)
-    , index(adcIndex)
 {
     dataLen = 4;//pack - crc
     CommData* data = new CommData();
-    data->autoUpdate=true;
+    data->autoUpdate=false;
     data->autoUpdatePeriod=10000;
     data->autoWrite=false;
     data->defaultValue=0;
@@ -18,12 +17,13 @@ AnalogSensor::AnalogSensor(uint8_t deviceAddr, uint8_t adcIndex)
     data->changed=false;
     params[(int)AbstractDevice::CurValue] = data;
     paramIter=params;
+    setIndex(adcIndex);
 }
 
 QByteArray AnalogSensor::prefix()
 {
-    char buf[] = {(char)addr,(char)index};
-    return QByteArray(buf,2);
+    char buf[] = {(char)addr};
+    return QByteArray(buf,1);
 }
 
 QByteArray AnalogSensor::stripPrefix(const QByteArray &data)
@@ -53,5 +53,14 @@ bool AnalogSensor::isUpdated()
 
 AbstractDevice::DeviceType AnalogSensor::deviceType()
 {
-    AbstractDevice::DeviceType::DeviceType_AnalogSensor;
+    return AbstractDevice::DeviceType::DeviceType_AnalogSensor;
+}
+
+void AnalogSensor::setIndex(uint8_t index)
+{
+    if(index<10)
+    {
+        params[(int)AbstractDevice::CurValue]->readCode=10+index;
+        params[(int)AbstractDevice::CurValue]->autoUpdate=true;
+    }
 }

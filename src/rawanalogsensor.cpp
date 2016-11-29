@@ -3,16 +3,20 @@
 #include <QDebug>
 
 RawAnalogSensor::RawAnalogSensor(QSettings &settings)
-    :AnalogSensor(0,0)
+    :AnalogSensor(0)
 {
      bool ok;
      addr = settings.value("DeviceAddress",0).toUInt(&ok);
      if(!ok)
          qCritical()<<"DeviceAddress: invalid value";
 
-     index = settings.value("SensorIndex",9).toUInt(&ok);
+     uint8_t index = settings.value("SensorIndex",0xFF).toUInt(&ok);
      if(!ok)
+     {
          qCritical()<<"SensorIndex: invalid value";
+         index=0xFF;
+     }
+     setIndex(index);
 
      _minNativeValue = settings.value("MinNativeValue",0).toUInt(&ok);
      if(!ok)
@@ -27,8 +31,14 @@ RawAnalogSensor::RawAnalogSensor(QSettings &settings)
 
 double RawAnalogSensor::value()
 {
-    const double cur = nativeValue()-_minNativeValue;
-    return (cur/_distance);
+    double val = 0.0;
+    uint16_t nat = nativeValue();
+    if(nat >= _minNativeValue && nat <= _maxNativeValue)
+    {
+        const double cur = nativeValue()-_minNativeValue;
+        val=(cur/_distance);
+    }
+    return val;
 }
 
 bool RawAnalogSensor::isValueValid()

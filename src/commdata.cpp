@@ -61,7 +61,10 @@ void CommData::commitUpdated()
 
 QByteArray CommData::readReq()
 {
-    Q_ASSERT(readCode);
+    if(!readCode)
+    {
+        Q_ASSERT(false);
+    }
     QByteArray req;
     if(readCode)
     {
