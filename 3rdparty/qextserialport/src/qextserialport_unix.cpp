@@ -77,7 +77,7 @@ bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)
         /*set up other port settings*/
         currentTermios.c_cflag |= CREAD|CLOCAL;
         currentTermios.c_lflag &= (~(ICANON|ECHO|ECHOE|ECHOK|ECHONL|ISIG));
-        currentTermios.c_iflag &= (~(INPCK|IGNPAR|PARMRK|IstripPrefix|ICRNL|IXANY));
+        currentTermios.c_iflag &= (~(INPCK|IGNPAR|PARMRK|ISTRIP|ICRNL|IXANY));
         currentTermios.c_oflag &= (~OPOST);
         currentTermios.c_cc[VMIN] = 0;
 #ifdef _POSIX_VDISABLE  // Is a disable character available on this system?
