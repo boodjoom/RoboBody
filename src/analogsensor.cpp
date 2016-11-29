@@ -38,7 +38,7 @@ QByteArray AnalogSensor::stripPrefix(const QByteArray &data)
     if(data.isEmpty())
         return data;
     else
-        return data.right(data.length()-2);
+        return data.right(data.length()-1);
 }
 
 bool AnalogSensor::isValid()
