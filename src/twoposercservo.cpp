@@ -55,7 +55,7 @@ GripperState TwoPoseRCServo::getState()
 {
     if(_nextState != _currentState)
     {
-        if(QDateTime::currentMSecsSinceEpoch() >= _travelStartTimeMs+travelTime)
+        if(QDateTime::currentMSecsSinceEpoch() >= (_travelStartTimeMs+travelTime))
         {
             _currentState=_nextState;
         }

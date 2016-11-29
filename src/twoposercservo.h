@@ -15,7 +15,7 @@ public:
 protected:
     uint16_t _openedNativeValue;
     uint16_t _closedNativeValue;
-    uint32_t _travelStartTimeMs;
+    uint64_t _travelStartTimeMs;
     GripperState _nextState;
     GripperState _currentState;
 };
