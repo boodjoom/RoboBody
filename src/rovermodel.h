@@ -46,6 +46,7 @@ public:
     void setManipGripperPose(GripperPose newPose);
     GripperState getManipGripperState();
     double getBattary();
+    void calibManip();
 protected:
     QString toString(RoverModel::RoverDevices devType);
     void addNewWheelDrive(QSettings& settings, RoverModel::RoverDevices devName);

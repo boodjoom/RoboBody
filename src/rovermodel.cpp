@@ -22,10 +22,8 @@ RoverModel::RoverModel(QSettings &settings, QObject *parent)
     addNewWheelAngle(settings,RightFrontWheelAngle);
     addNewWheelAngle(settings,RightBackWheelAngle);
     addNewManipAngle(settings, FirstManipAngle);
-    //enable first to start calib
-    ManipAngle* firstDrive = dynamic_cast<ManipAngle*>(devices[(int)FirstManipAngle]);
-    firstDrive->params[(int)AbstractDevice::SetEnabled]->changed=true;
     addNewManipAngle(settings, SecondManipAngle);
+    calibManip();
     addNewTwoPoseRCServo(settings, ManipGripper);
     addNewRawAnalogSensor(settings,BaterrySensor);
     deviceIter = devices;
@@ -74,9 +72,8 @@ void RoverModel::setManipPose(ManipPose newPose)
 {
     if(newPose == ManipPose::Base)
     {
-        //disable second to start calib
-        ManipAngle* firstDrive = dynamic_cast<ManipAngle*>(devices[(int)SecondManipAngle]);
-        firstDrive->params[(int)AbstractDevice::SetDisabled]->changed=true;
+        calibManip();
+        return;
     }
     QHashIterator<int, AbstractDevice*> it(devices);
     it.toFront();
@@ -87,7 +84,6 @@ void RoverModel::setManipPose(ManipPose newPose)
         {
             switch(newPose)
             {
-            case ManipPose::Base: manipAngle->moveToBase();break;
             case ManipPose::Home: manipAngle->moveToHome();break;
             case ManipPose::Target: manipAngle->moveToTarget();break;
             default:
@@ -150,6 +146,18 @@ double RoverModel::getBattary()
         result = sensor->value();
     }
     return result;
+}
+
+void RoverModel::calibManip()
+{
+    //enable first to start calib
+    ManipAngle* firstDrive = dynamic_cast<ManipAngle*>(devices[(int)FirstManipAngle]);
+    firstDrive->params[(int)AbstractDevice::SetEnabled]->changed=true;
+    firstDrive->moveToBase();
+    //disable second to start calib
+    ManipAngle* secondDrive = dynamic_cast<ManipAngle*>(devices[(int)SecondManipAngle]);
+    secondDrive->params[(int)AbstractDevice::SetDisabled]->changed=true;
+    secondDrive->moveToBase();
 }
 
 QString RoverModel::toString(RoverModel::RoverDevices devType)
