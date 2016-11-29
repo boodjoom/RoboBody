@@ -23,7 +23,7 @@ protected:
     bool _useTravelTime;
     void updateState();
 private:
-    uint32_t _travelStartTimeMs;
+    uint64_t _travelStartTimeMs;
     ManipState _nextState;
     ManipState _currentState;
 };
