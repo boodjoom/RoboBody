@@ -168,7 +168,7 @@ void RoverImpl::startManip()
 {
   qDebug()<<"RoverImpl::startManip";
   setCurManipStage(ManipStage::StartManip);
-  onManipStageTimeout();
+  QMetaObject::invokeMethod(this,"onManipStageTimeout");
 }
 
 ManipState RoverImpl::getManipState()
