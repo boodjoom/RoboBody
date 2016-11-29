@@ -12,7 +12,7 @@ rc_servo::rc_servo(uint8_t deviceAddr, uint8_t servoNum)
 , number(servoNum)
 , travelTime(0)
 {
-    dataLen = 7;//pack - crc
+    responseDataLen = 7;//pack - crc
     CommData* data = new CommData();
     data->autoUpdate=false;
     data->autoWrite=false;

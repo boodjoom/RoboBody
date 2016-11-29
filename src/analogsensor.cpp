@@ -5,8 +5,9 @@ AnalogSensor::AnalogSensor(uint8_t deviceAddr, uint8_t adcIndex)
     : AbstractDevice()
     , addr(deviceAddr)
 {
-    //7F 20 0A 00 00 00 00 0A A6
-    dataLen = 7;//pack - crc
+    //7F 20 0A 00 00 00 00 0A A6 - req
+    //01 00 xx xx aa aa - resp
+    responseDataLen = 4;//pack - crc
     CommData* data = new CommData();
     data->autoUpdate=false;
     data->autoUpdatePeriod=10000;

@@ -395,7 +395,7 @@ void SerialComm::nextParam()
 #ifdef SERIAL_DEBUG
                     qDebug()<<"Test read after write";
 #endif
-                    param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq()+dev->suffix(),dev->dataLen)));
+                    param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq()+dev->suffix(),dev->responseDataLen)));
                     if(param->isUpdated())
                     {
                         qCritical()<<"Test read failed, actual value="<<param->value();
@@ -427,7 +427,7 @@ void SerialComm::nextParam()
         else if(param->autoUpdate && QDateTime::currentMSecsSinceEpoch() >= param->autoUpdateLastTime + param->autoUpdatePeriod)
         {
             //qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto update "<<toString(param->readReq());
-            QByteArray answer = read(dev->prefix()+param->readReq()+dev->suffix(),dev->dataLen);
+            QByteArray answer = read(dev->prefix()+param->readReq()+dev->suffix(),dev->responseDataLen);
             param->fromReq(dev->stripPrefix(answer));
             qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" value="<<param->value();
             param->autoUpdateLastTime = QDateTime::currentMSecsSinceEpoch();

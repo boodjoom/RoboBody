@@ -35,7 +35,7 @@ public:
     virtual QByteArray stripPrefix(const QByteArray& data)=0;
     virtual bool isValid()=0;
     virtual AbstractDevice::DeviceType deviceType();
-    uint8_t dataLen;
+    uint8_t responseDataLen;
 };
 
 #endif // ABSTRACTDEVICE_H

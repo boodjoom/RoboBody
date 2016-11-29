@@ -3,7 +3,7 @@
 
 Drive::Drive(uint8_t driveAddr):AbstractDevice(),addr(driveAddr)
 {
-    dataLen = 4;//pack - crc
+    responseDataLen = 4;//pack - crc
     CommData* data = new CommData();
     data->autoUpdate=false;
     data->autoWrite=false;
