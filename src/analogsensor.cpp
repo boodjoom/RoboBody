@@ -5,7 +5,8 @@ AnalogSensor::AnalogSensor(uint8_t deviceAddr, uint8_t adcIndex)
     : AbstractDevice()
     , addr(deviceAddr)
 {
-    dataLen = 4;//pack - crc
+    //7F 20 0A 00 00 00 00 0A A6
+    dataLen = 7;//pack - crc
     CommData* data = new CommData();
     data->autoUpdate=false;
     data->autoUpdatePeriod=10000;
@@ -22,8 +23,13 @@ AnalogSensor::AnalogSensor(uint8_t deviceAddr, uint8_t adcIndex)
 
 QByteArray AnalogSensor::prefix()
 {
-    char buf[] = {(char)addr};
-    return QByteArray(buf,1);
+    char buf[] = {(char)0x7f,(char)addr};
+    return QByteArray(buf,2);
+}
+
+QByteArray AnalogSensor::suffix()
+{
+    return QByteArray(2,'\0');
 }
 
 QByteArray AnalogSensor::stripPrefix(const QByteArray &data)

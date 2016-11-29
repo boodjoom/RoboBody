@@ -8,6 +8,7 @@ public:
     AnalogSensor(uint8_t deviceAddr, uint8_t adcIndex = 0xFF);
     uint8_t addr;
     virtual QByteArray prefix();
+    virtual QByteArray suffix();
     virtual QByteArray stripPrefix(const QByteArray& data);
     virtual bool isValid();
     uint16_t nativeValue();
