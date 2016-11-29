@@ -101,10 +101,10 @@ void ManipAngle::updateState()
     {
         if((_travelStartTimeMs+_travelTimeMs) < QDateTime::currentMSecsSinceEpoch())
         {
-            qDebug()<<"Manip angle trip done: prev = "<< _currentState<<" cur = "<<_nextState;
+            qDebug()<<"Manip angle trip done: prev = "<< (int)_currentState<<" cur = "<<(int)_nextState;
             _currentState = _nextState;
         }
         else
-            qDebug()<<"Manip angle trip progress: prev = "<< _currentState<<" cur = "<<_nextState;
+            qDebug()<<"Manip angle trip progress: prev = "<< (int)_currentState<<" cur = "<<(int)_nextState;
     }
 }
