@@ -36,6 +36,8 @@ ErrCode Rover::setRefSpeed(double speed, unsigned long long timeout)
 
 double Rover::getCurSpeed(ErrCode *err)
 {
+    if(err)
+        *err = ErrNotImplemented;
     return 0.0;
 }
 
@@ -46,6 +48,8 @@ double Rover::getRefSpeed(ErrCode *err)
 
 bool Rover::isBreaksEnabled(ErrCode *err)
 {
+    if(err)
+        *err = ErrNotImplemented;
     return false;
 }
 
@@ -61,6 +65,8 @@ double Rover::getRefYaw(ErrCode *err)
 
 double Rover::getCurYaw(ErrCode *err)
 {
+    if(err)
+        *err = ErrNotImplemented;
     return 0.0;
 }
 
@@ -83,6 +89,11 @@ QString Rover::toString(ManipState state)
 {
     static int enumIdx = Rover::staticMetaObject.indexOfEnumerator("ManipState");
     return Rover::staticMetaObject.enumerator(enumIdx).valueToKey((int)state);
+}
+
+double Rover::getBattery(ErrCode *err)
+{
+    return pImpl->getBattery(err);
 }
 
 ErrCode Rover::setRefYaw(double yaw)

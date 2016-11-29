@@ -21,6 +21,10 @@ RoverModel::RoverModel(QSettings &settings, QObject *parent)
     addNewWheelAngle(settings,LeftBackWheelAngle);
     addNewWheelAngle(settings,RightFrontWheelAngle);
     addNewWheelAngle(settings,RightBackWheelAngle);
+    addNewManipAngle(settings, FirstManipAngle);
+    addNewManipAngle(settings, SecondManipAngle);
+    addNewTwoPoseRCServo(settings, ManipGripper);
+    addNewRawAnalogSensor(settings,BaterrySensor);
     deviceIter = devices;
 }
 
@@ -124,6 +128,17 @@ GripperState RoverModel::getManipGripperState()
     if(gripper)
     {
         result = gripper->getState();
+    }
+    return result;
+}
+
+double RoverModel::getBattary()
+{
+    double result =0.0;
+    RawAnalogSensor* sensor = dynamic_cast<RawAnalogSensor*>(devices[(int)BaterrySensor]);
+    if(sensor)
+    {
+        result = sensor->value();
     }
     return result;
 }

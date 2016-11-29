@@ -182,6 +182,13 @@ ManipState RoverImpl::getManipState()
   return result;
 }
 
+double RoverImpl::getBattery(ErrCode *err)
+{
+    if(err)
+        *err = ErrOk;
+    return _roverModel->getBattary();
+}
+
 void RoverImpl::onRefSpeedTimeout()
 {
     setRefSpeed(0,0);

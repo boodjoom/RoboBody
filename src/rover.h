@@ -31,6 +31,7 @@ public:
     ManipState getManipState();
     Q_ENUM(ManipState)
     static QString toString(ManipState state);
+    double getBattery(ErrCode* err = nullptr);
 public slots:
     void connect();
     void disconnect();

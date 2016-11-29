@@ -31,6 +31,7 @@ public:
     ManipState getManipState();
     enum class ManipStage{StartManip,MoveToTarget,OpenGripper,CloseGripper, MoveToHome, StopManip};
     Q_ENUM(ManipStage)
+    double getBattery(ErrCode* err = nullptr);
 signals:
     void open();
     void close();
