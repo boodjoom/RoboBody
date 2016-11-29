@@ -8,6 +8,7 @@ extern "C"{
 #include <QMutex>
 #include <QCoreApplication>
 #include <QElapsedTimer>
+#include <QDateTime>
 
 //#define SERIAL_DEBUG
 
@@ -107,7 +108,7 @@ void SerialComm::run()
             return;
         //qDebug()<<"serialcomm run start sync total devices "<<model->devices.size();
         model->toFront();
-#if 0
+#if 0 // depracated, not actual logic, will be removed
         //if(!model->hasNext())qDebug()<<"model is empty";
         while(model->hasNext())//для всех устройств
         {
@@ -123,13 +124,13 @@ void SerialComm::run()
                 if(param->isChanged())
                 {
                     qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" write changed";
-                    ErrCode err = write(dev->prefix()+param->writeReq());
+                    ErrCode err = write(dev->prefix()+param->writeReq()+dev->suffix());
                     if(err==ErrOk)
                     {
                         if(param->checkAfterWrite)
                         {
                             qDebug()<<"Test read after write";
-                            param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq(),dev->dataLen)));
+                            param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq()+dev->suffix(),dev->dataLen)));
                             if(param->isUpdated())
                             {
                                 qDebug()<<"Test read failed, actual value="<<param->value();
@@ -154,12 +155,12 @@ void SerialComm::run()
                 else if(param->value()!=param->defaultValue && param->autoWrite)
                 {
                     qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto write";
-                    write(dev->prefix()+param->writeReq());
+                    write(dev->prefix()+param->writeReq()+dev->suffix());
                 }
                 else if(param->autoUpdate)
                 {
                     //qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto update "<<toString(param->readReq());
-                    QByteArray answer = read(dev->prefix()+param->readReq(),dev->dataLen);
+                    QByteArray answer = read(dev->prefix()+param->readReq()+dev->suffix(),dev->dataLen);
                     param->fromReq(dev->stripPrefix(answer));
                     qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" value="<<param->value();
                 }
@@ -386,7 +387,7 @@ void SerialComm::nextParam()
         if(param->isChanged())
         {
             qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" write changed";
-            ErrCode err = write(dev->prefix()+param->writeReq());
+            ErrCode err = write(dev->prefix()+param->writeReq()+dev->suffix());
             if(err==ErrOk)
             {
                 if(param->checkAfterWrite)
@@ -394,7 +395,7 @@ void SerialComm::nextParam()
 #ifdef SERIAL_DEBUG
                     qDebug()<<"Test read after write";
 #endif
-                    param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq(),dev->dataLen)));
+                    param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq()+dev->suffix(),dev->dataLen)));
                     if(param->isUpdated())
                     {
                         qCritical()<<"Test read failed, actual value="<<param->value();
@@ -421,14 +422,15 @@ void SerialComm::nextParam()
         else if(param->value()!=param->defaultValue && param->autoWrite)
         {
             qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto write";
-            write(dev->prefix()+param->writeReq());
+            write(dev->prefix()+param->writeReq()+dev->suffix());
         }
-        else if(param->autoUpdate)
+        else if(param->autoUpdate && QDateTime::currentMSecsSinceEpoch() >= param->autoUpdateLastTime + param->autoUpdatePeriod)
         {
             //qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto update "<<toString(param->readReq());
-            QByteArray answer = read(dev->prefix()+param->readReq(),dev->dataLen);
+            QByteArray answer = read(dev->prefix()+param->readReq()+dev->suffix(),dev->dataLen);
             param->fromReq(dev->stripPrefix(answer));
             qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" value="<<param->value();
+            param->autoUpdateLastTime = QDateTime::currentMSecsSinceEpoch();
         } else //nothing to be done
             nextParamTimeout=1;
         QTimer::singleShot(nextParamTimeout,this,SLOT(nextParam()));

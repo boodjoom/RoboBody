@@ -7,6 +7,7 @@
 #include <QThread>
 #include <QDebug>
 #include <QTimer>
+#include <QMetaEnum>
 
 RoverImpl::RoverImpl()
     : QObject()
@@ -55,6 +56,8 @@ ErrCode RoverImpl::init(QSettings &settings)
     connect(_serialComm, SIGNAL(error(ErrCode)),this,SIGNAL(error(ErrCode)));
     connect(_serialComm, SIGNAL(warning(WarCode)),this,SIGNAL(warning(WarCode)));
 
+
+    connect(&_manipStageTimer,SIGNAL(timeout()),this,SLOT(onManipStageTimeout()));
     //qDebug()<<"start thread TH "<<QThread::currentThreadId();
     //_serialComm->start();
     _commThread->start();
@@ -135,35 +138,48 @@ void RoverImpl::closePort()
 
 ErrCode RoverImpl::setBreaks(bool enabled)
 {
-    qDebug()<<"Not implemented";
+    Q_UNUSED(enabled)
+    qDebug()<<"Not i;mplemented";
     return ErrNotImplemented;
 }
 
 double RoverImpl::getRefSpeed(ErrCode *err)
 {
+    if(err)
+        *err = ErrOk;
     return _speed;
 }
 
 double RoverImpl::getRefYaw(ErrCode *err)
 {
+    if(err)
+        *err = ErrOk;
     return _yaw;
 }
 
 double RoverImpl::getTravel(ErrCode *err)
 {
-    Q_UNUSED(err)
+    if(err)
+        *err = ErrOk;
     return _distanceApproximation;
 }
 
 void RoverImpl::startManip()
 {
-  qDebug()<<"RoverImpl::startManip not implemented";
+  qDebug()<<"RoverImpl::startManip";
+  setCurManipStage(ManipStage::StartManip);
+  onManipStageTimeout();
 }
 
 ManipState RoverImpl::getManipState()
 {
-  qDebug()<<"RoverImpl::getManipState not implemented";
-  return ManipState::Unknown;
+  qDebug()<<"RoverImpl::getManipState";
+  ManipState result = ManipState::Unknown;
+  if(_roverModel->getManipGripperState() == GripperState::Moving)
+      result = ManipState::Moving;
+  else
+      result = _roverModel->getManipState();
+  return result;
 }
 
 void RoverImpl::onRefSpeedTimeout()
@@ -171,7 +187,63 @@ void RoverImpl::onRefSpeedTimeout()
     setRefSpeed(0,0);
 }
 
+void RoverImpl::onManipStageTimeout()
+{
+    switch(_curManipStage)
+    {
+    case ManipStage::StartManip:
+        _roverModel->setManipPose(ManipPose::Target);
+        setCurManipStage(ManipStage::MoveToTarget);
+        _manipStageTimer.start(250);
+        break;
+    case ManipStage::MoveToTarget:
+        if(_roverModel->getManipState() == ManipState::AtTarget)
+        {
+             setCurManipStage(ManipStage::OpenGripper);
+             _roverModel->setManipGripperPose(GripperPose::Opened);
+        }
+        break;
+    case ManipStage::OpenGripper:
+        if(_roverModel->getManipGripperState() == GripperState::Opened)
+        {
+            setCurManipStage(ManipStage::CloseGripper);
+            _roverModel->setManipGripperPose(GripperPose::Closed);
+        }
+        break;
+    case ManipStage::CloseGripper:
+        if(_roverModel->getManipGripperState() == GripperState::Closed)
+        {
+            setCurManipStage(ManipStage::MoveToHome);
+            _roverModel->setManipPose(ManipPose::Home);
+        }
+        break;
+    case ManipStage::MoveToHome:
+        if(_roverModel->getManipState() == ManipState::AtHome)
+        {
+            _manipStageTimer.stop();
+            setCurManipStage(ManipStage::StartManip);
+        }
+        break;
+     default:break;
+    };
+}
+
 double RoverImpl::approximateDistance(double newSpeedOnInterval)
 {
     return (newSpeedOnInterval - _intervalCorrection)*_speedApproximation;
+}
+
+QString RoverImpl::toString(RoverImpl::ManipStage stage)
+{
+    static int enumIdx = RoverImpl::staticMetaObject.indexOfEnumerator("ManipStage");
+    return RoverImpl::staticMetaObject.enumerator(enumIdx).valueToKey((int)stage);
+}
+
+void RoverImpl::setCurManipStage(RoverImpl::ManipStage stage)
+{
+    if(stage != _curManipStage)
+    {
+        qDebug()<<"RoverImpl: ManipStage changed old:"<<toString(_curManipStage)<<" new:"<<toString(stage);
+        _curManipStage=stage;
+    }
 }

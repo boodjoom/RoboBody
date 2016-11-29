@@ -6,11 +6,11 @@
 #include "errcode.h"
 #include "warcode.h"
 #include <QElapsedTimer>
+#include <QTimer>
 #include "manipstate.h"
 
 class RoverModel;
 class SerialComm;
-class QTimer;
 
 class RoverImpl: public QObject
 {
@@ -29,6 +29,8 @@ public:
     double getTravel(ErrCode* err = nullptr);
     void startManip();
     ManipState getManipState();
+    enum class ManipStage{StartManip,MoveToTarget,OpenGripper,CloseGripper, MoveToHome, StopManip};
+    Q_ENUM(ManipStage)
 signals:
     void open();
     void close();
@@ -47,13 +49,17 @@ private:
     QTimer* _refSpeedTimer;
 private slots:
     void onRefSpeedTimeout();
+    void onManipStageTimeout();
 private:
     double _distanceApproximation;
     QElapsedTimer _speedOnTimer;
     double approximateDistance(double newSpeedOnInterval);
     double _intervalCorrection;
     double _speedApproximation;
-
+    QTimer _manipStageTimer;
+    ManipStage _curManipStage;
+    QString toString(RoverImpl::ManipStage stage);
+    void setCurManipStage(ManipStage stage);
 };
 
 #endif // ROVERIMPL_H

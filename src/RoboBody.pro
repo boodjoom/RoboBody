@@ -24,7 +24,12 @@ SOURCES += rover.cpp \
     crc16.c \
     roverwheeldrive.cpp \
     angledrive.cpp \
-    roverwheelangle.cpp
+    roverwheelangle.cpp \
+    manipangle.cpp \
+    rc_servo.cpp \
+    analogsensor.cpp \
+    twoposercservo.cpp \
+    rawanalogsensor.cpp
 
 HEADERS += rover.h\
         robobody_global.h \
@@ -43,7 +48,13 @@ HEADERS += rover.h\
     roverwheeldrive.h \
     angledrive.h \
     roverwheelangle.h \
-    manipstate.h
+    manipstate.h \
+    manipangle.h \
+    rc_servo.h \
+    analogsensor.h \
+    twoposercservo.h \
+    gripperstate.h \
+    rawanalogsensor.h
 
 unix {
     target.path = /usr/lib

@@ -29,6 +29,8 @@ public:
     double getTravel(ErrCode* err = nullptr);
     void startManip();
     ManipState getManipState();
+    Q_ENUM(ManipState)
+    static QString toString(ManipState state);
 public slots:
     void connect();
     void disconnect();

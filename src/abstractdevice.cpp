@@ -14,6 +14,11 @@ QPair<int, CommData *> AbstractDevice::current()
 
 void AbstractDevice::toFront(){paramIter.toFront();}
 
+QByteArray AbstractDevice::suffix()
+{
+    return QByteArray();
+}
+
 AbstractDevice::DeviceType AbstractDevice::deviceType()
 {
     return DeviceType_Unknown;

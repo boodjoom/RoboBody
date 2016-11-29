@@ -5,6 +5,8 @@ CommData::CommData():
     curValue(55555)
   , changedValue(55555)
   , updatedValue(55555)
+  , autoUpdatePeriod(0)
+  , autoUpdateLastTime(0)
 {
 
 }
@@ -59,15 +61,28 @@ void CommData::commitUpdated()
 
 QByteArray CommData::readReq()
 {
-    char buf[] = {(char)readCode,'\0','\0'};
-    return QByteArray(buf,3);
+    Q_ASSERT(readCode);
+    QByteArray req;
+    if(readCode)
+    {
+        req.append((char)readCode);
+    }
+    req.append('\0');
+    req.append('\0');
+
+    return req;
 }
 
 QByteArray CommData::writeReq()
 {
-    //qDebug()<<"writeReq code="<<writeCode<<" val="<<value();
-    char buf[] = {(char)writeCode,(char)(value()>>8),(char)value()};
-    return QByteArray(buf,3);
+    QByteArray req;
+    if(writeCode)
+    {
+        req.append((char)writeCode);
+    }
+    req.append((char)(value()>>8));
+    req.append((char)value());
+    return req;
 }
 
 QString toString1(const QByteArray& data)
@@ -80,6 +95,7 @@ QString toString1(const QByteArray& data)
 
 ErrCode CommData::fromReq(const QByteArray &data, uint8_t shift)
 {
+    Q_ASSERT(readCode);
     //qDebug()<<"fromReq data:"<<toString1(data);
     if(data.isEmpty() || data.size()<(shift+3))
     {

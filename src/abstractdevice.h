@@ -20,7 +20,8 @@ public:
         DeviceType_PwmDrive,
         DeviceType_AngleController,
         DeviceType_SpeedController,
-        DeviceType_RCServo
+        DeviceType_RCServo,
+        DeviceType_AnalogSensor
     };
     AbstractDevice();
     QHash<int, CommData*> params;
@@ -30,6 +31,7 @@ public:
     void toFront();
     QHashIterator<int, CommData*> paramIter;
     virtual QByteArray prefix()=0;
+    virtual QByteArray suffix();
     virtual QByteArray stripPrefix(const QByteArray& data)=0;
     virtual bool isValid()=0;
     virtual AbstractDevice::DeviceType deviceType();

@@ -1,6 +1,7 @@
 #include "rover.h"
 #include "roverimpl.h"
 #include <QDateTime>
+#include <QMetaEnum>
 
 Rover::Rover()
 {
@@ -76,6 +77,12 @@ void Rover::startManip()
 ManipState Rover::getManipState()
 {
     return pImpl->getManipState();
+}
+
+QString Rover::toString(ManipState state)
+{
+    static int enumIdx = Rover::staticMetaObject.indexOfEnumerator("ManipState");
+    return Rover::staticMetaObject.enumerator(enumIdx).valueToKey((int)state);
 }
 
 ErrCode Rover::setRefYaw(double yaw)
