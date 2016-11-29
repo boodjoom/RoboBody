@@ -14,6 +14,8 @@ public:
     void moveToBase();
     ManipState getState();
 protected:
+    uint16_t _calibNativeSpeed;
+    uint16_t _travelNativeSpeed;
     uint16_t _targetNativeAngle;
     uint16_t _homeNativeAngle;
     uint16_t _travelTimeMs;

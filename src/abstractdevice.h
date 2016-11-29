@@ -12,7 +12,8 @@ public:
         RefValue =1,
         CurValue =2,
         SetEnabled,
-        SetDisabled
+        SetDisabled,
+        MaxSpeed
     };
     enum DeviceType
     {
