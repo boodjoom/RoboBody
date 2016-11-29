@@ -228,7 +228,7 @@ void RoverImpl::onManipStageTimeout()
         if(_roverModel->getManipState() == ManipState::AtHome)
         {
             _manipStageTimer.stop();
-            setCurManipStage(ManipStage::StartManip);
+            setCurManipStage(ManipStage::StopManip);
         }
         break;
      default:break;
@@ -253,4 +253,21 @@ void RoverImpl::setCurManipStage(RoverImpl::ManipStage stage)
         qDebug()<<"RoverImpl: ManipStage changed old:"<<toString(_curManipStage)<<" new:"<<toString(stage);
         _curManipStage=stage;
     }
+}
+
+void RoverImpl::execManip(ManipAction action)
+{
+  switch(action)
+  {
+    case ManipAction::Start: startManip();break;
+    case ManipAction::Stop: _manipStageTimer.stop();
+            setCurManipStage(ManipStage::StopManip);
+            break;
+    case ManipAction::Home: _roverModel->setManipPose(ManipPose::Home); break;
+    case ManipAction::Target: _roverModel->setManipPose(ManipPose::Target); break;
+    case ManipAction::Base: _roverModel->setManipPose(ManipPose::Base); break;
+    case ManipAction::Open: _roverModel->setManipGripperPose(GripperPose::Opened); break;
+    case ManipAction::Close: _roverModel->setManipGripperPose(GripperPose::Closed); break;
+    default: break;
+  };
 }

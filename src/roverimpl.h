@@ -8,6 +8,7 @@
 #include <QElapsedTimer>
 #include <QTimer>
 #include "manipstate.h"
+#include "manipaction.h"
 
 class RoverModel;
 class SerialComm;
@@ -32,6 +33,7 @@ public:
     enum class ManipStage{StartManip,MoveToTarget,OpenGripper,CloseGripper, MoveToHome, StopManip};
     Q_ENUM(ManipStage)
     double getBattery(ErrCode* err = nullptr);
+    void execManip(ManipAction action);
 signals:
     void open();
     void close();

@@ -7,6 +7,7 @@
 #include "errcode.h"
 #include "warcode.h"
 #include "manipstate.h"
+#include "manipaction.h"
 
 class RoverImpl;
 
@@ -29,6 +30,7 @@ public:
     double getTravel(ErrCode* err = nullptr);
     void startManip();
     ManipState getManipState();
+    void execManip(ManipAction action);
     static QString toString(ManipState state);
     double getBattery(ErrCode* err = nullptr);
 public slots:

@@ -118,3 +118,8 @@ void Rover::disconnect()
 {
     pImpl->closePort();
 }
+
+void Rover::execManip(ManipAction action)
+{
+  pImpl->execManip(action);
+}
