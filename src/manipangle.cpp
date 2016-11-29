@@ -41,6 +41,9 @@ ManipAngle::ManipAngle(QSettings &settings)
     _nextState = ManipState::Unknown;
     _currentState  = ManipState::Unknown;
 
+    //disable by default
+    params[(int)SetEnabled]->changed=false;
+
     CommData* data = new CommData();
     data->autoUpdate=false;
     data->autoWrite=false;

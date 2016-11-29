@@ -13,6 +13,15 @@ Drive::Drive(uint8_t driveAddr):AbstractDevice(),addr(driveAddr)
     data->checkAfterWrite = false;
     data->setValue(1);
     params[(int)AbstractDevice::SetEnabled] = data;
+    data = new CommData();
+    data->autoUpdate=false;
+    data->autoWrite=false;
+    data->defaultValue=0;
+    data->readCode = 0;
+    data->writeCode = STOP_FCN;
+    data->checkAfterWrite = false;
+    data->changed=false;
+    params[(int)AbstractDevice::SetDisabled] = data;
     paramIter=params;
 }
 

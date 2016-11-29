@@ -22,6 +22,9 @@ RoverModel::RoverModel(QSettings &settings, QObject *parent)
     addNewWheelAngle(settings,RightFrontWheelAngle);
     addNewWheelAngle(settings,RightBackWheelAngle);
     addNewManipAngle(settings, FirstManipAngle);
+    //enable first to start calib
+    ManipAngle* firstDrive = dynamic_cast<ManipAngle*>(devices[(int)FirstManipAngle]);
+    firstDrive->params[(int)AbstractDevice::SetEnabled]->changed=true;
     addNewManipAngle(settings, SecondManipAngle);
     addNewTwoPoseRCServo(settings, ManipGripper);
     addNewRawAnalogSensor(settings,BaterrySensor);
@@ -69,6 +72,12 @@ void RoverModel::setRefAngle(double angle)
 
 void RoverModel::setManipPose(ManipPose newPose)
 {
+    if(newPose == ManipPose::Base)
+    {
+        //disable second to start calib
+        ManipAngle* firstDrive = dynamic_cast<ManipAngle*>(devices[(int)SecondManipAngle]);
+        firstDrive->params[(int)AbstractDevice::SetDisabled]->changed=true;
+    }
     QHashIterator<int, AbstractDevice*> it(devices);
     it.toFront();
     while(it.hasNext())
@@ -92,7 +101,7 @@ ManipState RoverModel::getManipState()
 {
     ManipState result = ManipState::Unknown;
     ManipAngle* firstDrive = dynamic_cast<ManipAngle*>(devices[(int)FirstManipAngle]);
-    ManipAngle* secondDrive = dynamic_cast<ManipAngle*>(devices[(int)FirstManipAngle]);
+    ManipAngle* secondDrive = dynamic_cast<ManipAngle*>(devices[(int)SecondManipAngle]);
     if(firstDrive && secondDrive)
     {
         const ManipState first = firstDrive->getState();
