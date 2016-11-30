@@ -7,6 +7,8 @@ CommData::CommData():
   , updatedValue(55555)
   , autoUpdatePeriod(0)
   , autoUpdateLastTime(0)
+  , autoWritePeriod(0)
+  , autoWriteLastTime(0)
 {
 
 }
