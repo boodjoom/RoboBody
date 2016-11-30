@@ -8,6 +8,7 @@
 #include "warcode.h"
 #include "manipstate.h"
 #include "manipaction.h"
+#include "battery.h"
 
 class RoverImpl;
 
@@ -32,7 +33,7 @@ public:
     ManipState getManipState();
     void execManip(ManipAction action);
     static QString toString(ManipState state);
-    double getBattery(ErrCode* err = nullptr);
+    double getBattery(Battery battery, ErrCode* err = nullptr);
 public slots:
     void connect();
     void disconnect();

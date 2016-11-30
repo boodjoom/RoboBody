@@ -14,7 +14,8 @@ enum ErrCode
     ErrWrongData =6,
     ErrSetParamFail =7,
     ErrWriteFail,
-    ErrNotImplemented
+    ErrNotImplemented,
+    ErrWrongArg
 };
 
 Q_DECLARE_METATYPE(ErrCode)

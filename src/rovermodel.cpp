@@ -26,7 +26,8 @@ RoverModel::RoverModel(QSettings &settings, QObject *parent)
     calibManip();
     addNewTwoPoseRCServo(settings, ManipGripper);
     setManipGripperPose(GripperPose::Opened);//default opened
-    addNewRawAnalogSensor(settings,BaterrySensor);
+    addNewRawAnalogSensor(settings,BodyBatterySensor);
+    addNewRawAnalogSensor(settings,BrainBatterySensor);
     deviceIter = devices;
 }
 
@@ -138,10 +139,10 @@ GripperState RoverModel::getManipGripperState()
     return result;
 }
 
-double RoverModel::getBattary()
+double RoverModel::getSensor(RoverDevices sensorDevice)
 {
     double result =0.0;
-    RawAnalogSensor* sensor = dynamic_cast<RawAnalogSensor*>(devices[(int)BaterrySensor]);
+    RawAnalogSensor* sensor = dynamic_cast<RawAnalogSensor*>(devices[(int)sensorDevice]);
     if(sensor)
     {
         result = sensor->value();

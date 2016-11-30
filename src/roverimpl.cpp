@@ -182,11 +182,27 @@ ManipState RoverImpl::getManipState()
   return result;
 }
 
-double RoverImpl::getBattery(ErrCode *err)
+double RoverImpl::getBattery(Battery battery, ErrCode *err)
 {
+    ErrCode e = ErrOk;
+    double result = 0.0;
+    switch(battery)
+    {
+    case Battery::Body:
+        result = _roverModel->getSensor(RoverModel::BodyBatterySensor);
+        break;
+    case Battery::Brain:
+        result = _roverModel->getSensor(RoverModel::BrainBatterySensor);
+        break;
+    default:
+        e = ErrWrongArg;
+        break;
+    };
     if(err)
-        *err = ErrOk;
-    return _roverModel->getBattary();
+    {
+        *err = e;
+    }
+    return result;
 }
 
 void RoverImpl::onRefSpeedTimeout()

@@ -98,9 +98,9 @@ QString Rover::toString(ManipState state)
     };
 }
 
-double Rover::getBattery(ErrCode *err)
+double Rover::getBattery(Battery battery, ErrCode *err)
 {
-    return pImpl->getBattery(err);
+    return pImpl->getBattery(battery, err);
 }
 
 ErrCode Rover::setRefYaw(double yaw)

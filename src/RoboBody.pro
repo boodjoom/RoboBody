@@ -54,7 +54,8 @@ HEADERS += rover.h\
     analogsensor.h \
     twoposercservo.h \
     gripperstate.h \
-    rawanalogsensor.h
+    rawanalogsensor.h \
+    battery.h
 
 unix {
     target.path = /usr/lib

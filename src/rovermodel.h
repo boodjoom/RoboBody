@@ -29,7 +29,8 @@ public:
         FirstManipAngle,
         SecondManipAngle,
         ManipGripper,
-        BaterrySensor
+        BodyBatterySensor,
+        BrainBatterySensor
     };
 
     RoverModel(QSettings& settings, QObject* parent = nullptr);
@@ -45,7 +46,7 @@ public:
     ManipState getManipState();
     void setManipGripperPose(GripperPose newPose);
     GripperState getManipGripperState();
-    double getBattary();
+    double getSensor(RoverDevices sensorDevice);
     void calibManip();
 protected:
     QString toString(RoverModel::RoverDevices devType);
