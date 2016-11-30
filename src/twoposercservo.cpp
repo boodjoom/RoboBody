@@ -27,11 +27,14 @@ TwoPoseRCServo::TwoPoseRCServo(QSettings &settings)
     travelTime = settings.value("TravelTimeMs",2000).toUInt(&ok);
     if(!ok)
         qCritical()<<"TravelTime: invalid value";
+
+    useSpeedControl = settings.value("UseSpeedControl",false).toBool();
+
     _travelStartTimeMs=0;
     _nextState = GripperState::Unknown;
     _currentState  = GripperState::Unknown;
      qInfo()<<"TwoPoseRCServo "<<addr<<":"<<number<<" with O:"<<_openedNativeValue
-           <<" C:"<<_closedNativeValue<<" TT:"<<travelTime
+           <<" C:"<<_closedNativeValue<<" TT:"<<travelTime<<" USC:"<<useSpeedControl
           <<" added";
 }
 

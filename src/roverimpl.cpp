@@ -206,15 +206,8 @@ void RoverImpl::onManipStageTimeout()
     case ManipStage::MoveToTarget:
         if(_roverModel->getManipState() == ManipState::AtTarget)
         {
-             setCurManipStage(ManipStage::OpenGripper);
-             _roverModel->setManipGripperPose(GripperPose::Opened);
-        }
-        break;
-    case ManipStage::OpenGripper:
-        if(_roverModel->getManipGripperState() == GripperState::Opened)
-        {
-            setCurManipStage(ManipStage::CloseGripper);
-            _roverModel->setManipGripperPose(GripperPose::Closed);
+             setCurManipStage(ManipStage::CloseGripper);
+             _roverModel->setManipGripperPose(GripperPose::Closed);
         }
         break;
     case ManipStage::CloseGripper:
@@ -226,6 +219,13 @@ void RoverImpl::onManipStageTimeout()
         break;
     case ManipStage::MoveToHome:
         if(_roverModel->getManipState() == ManipState::AtHome)
+        {
+            setCurManipStage(ManipStage::OpenGripper);
+            _roverModel->setManipGripperPose(GripperPose::Opened);
+        }
+        break;
+    case ManipStage::OpenGripper:
+        if(_roverModel->getManipGripperState() == GripperState::Opened)
         {
             _manipStageTimer.stop();
             setCurManipStage(ManipStage::StopManip);

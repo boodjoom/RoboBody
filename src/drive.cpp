@@ -20,6 +20,7 @@ Drive::Drive(uint8_t driveAddr):AbstractDevice(),addr(driveAddr)
     data->readCode = 0;
     data->writeCode = STOP_FCN;
     data->checkAfterWrite = false;
+    data->curValue=1;
     data->changed=false;
     params[(int)AbstractDevice::SetDisabled] = data;
     paramIter=params;

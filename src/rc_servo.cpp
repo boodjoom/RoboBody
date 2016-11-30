@@ -11,6 +11,7 @@ rc_servo::rc_servo(uint8_t deviceAddr, uint8_t servoNum)
   addr(deviceAddr)
 , number(servoNum)
 , travelTime(0)
+, useSpeedControl(false)
 {
     responseDataLen = 7;//pack - crc
     CommData* data = new CommData();
@@ -33,8 +34,13 @@ QByteArray rc_servo::prefix()
 
 QByteArray rc_servo::suffix()
 {
-    char buf[] = {(char)(travelTime>>8),(char)(travelTime & (uint16_t)0x00FF)};
-    return QByteArray(buf,2);
+    QByteArray ba(2,'\0');
+    if(useSpeedControl)
+    {
+        ba[0]=((char)(travelTime>>8));
+        ba[1]=((char)(travelTime & (uint16_t)0x00FF));
+    }
+    return ba;
 }
 
 QByteArray rc_servo::stripPrefix(const QByteArray &data)

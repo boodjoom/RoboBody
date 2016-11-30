@@ -25,6 +25,7 @@ RoverModel::RoverModel(QSettings &settings, QObject *parent)
     addNewManipAngle(settings, SecondManipAngle);
     calibManip();
     addNewTwoPoseRCServo(settings, ManipGripper);
+    setManipGripperPose(GripperPose::Opened);//default opened
     addNewRawAnalogSensor(settings,BaterrySensor);
     deviceIter = devices;
 }

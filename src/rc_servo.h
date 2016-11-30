@@ -15,6 +15,7 @@ public:
     uint8_t addr;
     uint8_t number;
     uint16_t travelTime;
+    bool useSpeedControl;
     virtual QByteArray prefix();
     virtual QByteArray suffix();
     virtual QByteArray stripPrefix(const QByteArray& data);
