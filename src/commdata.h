@@ -37,6 +37,8 @@ public:
     void setDefaultValue();
     uint16_t autoUpdatePeriod;
     uint64_t autoUpdateLastTime;
+    uint16_t autoWritePeriod;
+    uint64_t autoWriteLastTime;
 };
 
 #endif // COMMDATA_H

@@ -68,6 +68,6 @@ void AnalogSensor::setIndex(uint8_t index)
     if(index<10)
     {
         params[(int)AbstractDevice::CurValue]->readCode=10+index;
-        params[(int)AbstractDevice::CurValue]->autoUpdate=true;
+        params[(int)AbstractDevice::CurValue]->autoUpdate=false;
     }
 }

@@ -10,7 +10,7 @@ extern "C"{
 #include <QElapsedTimer>
 #include <QDateTime>
 
-#define SERIAL_DEBUG
+//#define SERIAL_DEBUG
 
 QString toString(const QByteArray& data)
 {
@@ -77,18 +77,12 @@ void SerialComm::stop()
 void SerialComm::start()
 {
     qDebug()<<"start serialcomm TH "<<QThread::currentThreadId();
-//    _port = new QSerialPort(portName);
-//    _port->setBaudRate(boudRate);
     stopFlag=false;
     QTimer::singleShot(10,this,SLOT(run()));
 }
 
 void SerialComm::run()
 {
-    //qDebug()<<"serialcomm run TH "<<QThread::currentThreadId();
-//    while(!stopFlag)
-//    {
-
         if(!_opened)
         {
             //qDebug()<<"serialcomm run port not ready";
@@ -108,72 +102,10 @@ void SerialComm::run()
             return;
         //qDebug()<<"serialcomm run start sync total devices "<<model->devices.size();
         model->toFront();
-#if 0 // depracated, not actual logic, will be removed
-        //if(!model->hasNext())qDebug()<<"model is empty";
-        while(model->hasNext())//для всех устройств
-        {
-            QPair<int, AbstractDevice*> devItem = model->next();
-            //qDebug()<<"dev "<<devItem.first;
-            AbstractDevice* dev = devItem.second;
-            dev->toFront();
-            while(dev->hasNext())//для всех параметров
-            {
-                QPair<int, CommData*> paramItem = dev->next();
-                //qDebug()<<"param "<<paramItem.first;
-                CommData* param = paramItem.second;
-                if(param->isChanged())
-                {
-                    qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" write changed";
-                    ErrCode err = write(dev->prefix()+param->writeReq()+dev->suffix());
-                    if(err==ErrOk)
-                    {
-                        if(param->checkAfterWrite)
-                        {
-                            qDebug()<<"Test read after write";
-                            param->fromReq(dev->stripPrefix(read(dev->prefix()+param->readReq()+dev->suffix(),dev->dataLen)));
-                            if(param->isUpdated())
-                            {
-                                qDebug()<<"Test read failed, actual value="<<param->value();
-                                emit error(ErrSetParamFail);
-                                param->revertUpdated();
-                            }
-                            else
-                            {
-                                qDebug()<<"Test read OK, actual value="<<param->value();
-                                param->commitChanged();
-                            }
-                        }
-                        else
-                            param->commitChanged();
-                    }
-                    else
-                    {
-                        qDebug()<<"write failed";
-                        emit error(ErrWriteFail);
-                    }
-                }
-                else if(param->value()!=param->defaultValue && param->autoWrite)
-                {
-                    qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto write";
-                    write(dev->prefix()+param->writeReq()+dev->suffix());
-                }
-                else if(param->autoUpdate)
-                {
-                    //qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto update "<<toString(param->readReq());
-                    QByteArray answer = read(dev->prefix()+param->readReq()+dev->suffix(),dev->dataLen);
-                    param->fromReq(dev->stripPrefix(answer));
-                    qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" value="<<param->value();
-                }
-            }
-        }
-#endif
-        //QThread::msleep(50);
     if(stopFlag)
         emit finished();
     else
-        QTimer::singleShot(50,this,SLOT(nextDev()));
-//    }
-//    emit finished();
+        QTimer::singleShot(10,this,SLOT(nextDev()));
 }
 
 ErrCode SerialComm::write(QByteArray data)
@@ -191,8 +123,8 @@ ErrCode SerialComm::write(QByteArray data)
     qDebug()<<"write to port "<<toString(data);
 #endif
     /*int writen = */_port->write(data);
-    _port->flush();
     _port->waitForBytesWritten(-1);
+    _port->flush();
     if(!_port->lastError())
     {
 #ifdef SERIAL_DEBUG
@@ -346,6 +278,7 @@ bool SerialComm::openImpl()
             //port.setBreakEnabled(false);
             _port->setFlowControl(FLOW_OFF);
             _port->setTextModeEnabled(false);
+            _port->setTimeout(0);
 #endif
             emit opened();
             qInfo()<<"port "<<portName<<" opened";
@@ -419,10 +352,11 @@ void SerialComm::nextParam()
                 emit error(ErrWriteFail);
             }
         }
-        else if(param->value()!=param->defaultValue && param->autoWrite)
+        else if(param->value()!=param->defaultValue && param->autoWrite && (QDateTime::currentMSecsSinceEpoch() >= (param->autoWriteLastTime + param->autoWritePeriod)))
         {
             qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto write";
             write(dev->prefix()+param->writeReq()+dev->suffix());
+            param->autoWriteLastTime = QDateTime::currentMSecsSinceEpoch();
         }
         else if(param->autoUpdate && (QDateTime::currentMSecsSinceEpoch() >= (param->autoUpdateLastTime + param->autoUpdatePeriod)))
         {
@@ -438,6 +372,7 @@ void SerialComm::nextParam()
     }
     else
     {
+        //QMetaObject::invokeMethod(this,"nextDev");
         QTimer::singleShot(10,this,SLOT(nextDev()));
     }
 }
