@@ -69,6 +69,8 @@ include(../common.pri)
 
 include(../3rdparty/include/qextserialport/qextserialport.prf)
 
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
+
 win32: {
 LIBS += -L$$PWD/../3rdparty/lib/qt$$QT_VERSION/$$Platform-$$Compiler/$$Configuration
 }
