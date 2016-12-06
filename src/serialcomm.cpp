@@ -354,16 +354,22 @@ void SerialComm::nextParam()
         }
         else if(param->value()!=param->defaultValue && param->autoWrite && (QDateTime::currentMSecsSinceEpoch() >= (param->autoWriteLastTime + param->autoWritePeriod)))
         {
+#ifdef SERIAL_DEBUG
             qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto write";
+#endif
             write(dev->prefix()+param->writeReq()+dev->suffix());
             param->autoWriteLastTime = QDateTime::currentMSecsSinceEpoch();
         }
         else if(param->autoUpdate && (QDateTime::currentMSecsSinceEpoch() >= (param->autoUpdateLastTime + param->autoUpdatePeriod)))
         {
-            //qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto update "<<toString(param->readReq());
+#ifdef SERIAL_DEBUG
+            qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" auto update "<<toString(dev->prefix()+param->readReq()+dev->suffix());
+#endif
             QByteArray answer = read(dev->prefix()+param->readReq()+dev->suffix(),dev->responseDataLen);
             param->fromReq(dev->stripPrefix(answer));
+#ifdef SERIAL_DEBUG
             qDebug()<<"dev "<<devItem.first<<"param "<<paramItem.first<<" value="<<param->value();
+#endif
             param->autoUpdateLastTime = QDateTime::currentMSecsSinceEpoch();
         } else //nothing to be done
             nextParamTimeout=1;
